@@ -34,7 +34,7 @@ public class Chara : MonoBehaviour {
             //　方向キーが多少押されている
             if (input.magnitude > 0.1f && !animator.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
             {
-                animator.SetFloat("Speed", input.magnitude);
+                animator.SetFloat("Speed", x*x+y*y);
 
                 transform.LookAt(transform.position + input);
 

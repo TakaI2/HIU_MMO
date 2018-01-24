@@ -1,23 +1,15 @@
 fileFormatVersion: 2
 guid: 6f41e5f6da8d133478c23e99dd6a037c
-timeCreated: 1516733177
+timeCreated: 1516787816
 licenseType: Free
 ModelImporter:
   serializedVersion: 22
   fileIDToRecycleName:
-    100000: Camera
-    100002: Lamp
-    100004: lod
-    100006: //RootNode
-    400000: Camera
-    400002: Lamp
-    400004: lod
-    400006: //RootNode
-    2000000: Camera
-    2300000: lod
-    3300000: lod
+    100000: //RootNode
+    400000: //RootNode
+    2300000: //RootNode
+    3300000: //RootNode
     4300000: lod
-    10800000: Lamp
   externalObjects:
   - first:
       type: UnityEngine:Material
@@ -58,7 +50,7 @@ ModelImporter:
     isReadable: 1
   meshes:
     lODScreenPercentages: []
-    globalScale: 1
+    globalScale: 0.25
     meshCompression: 0
     addColliders: 0
     importVisibility: 1
