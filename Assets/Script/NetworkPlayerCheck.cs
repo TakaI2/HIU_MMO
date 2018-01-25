@@ -26,7 +26,7 @@ namespace Com.MyCompany.MyGame
 
             animator = GetComponent<Animator>();
 
-            CameraWork _cameraWork = this.gameObject.GetComponent<CameraWork>();
+            CameraWork _cameraWork = this.gameObject.GetComponent<CameraWork>();  //CameraWorkが認識されないことがあるが、Unityを立ち上げ直したら治ってる。
 
             /*
             if (_cameraWork != null)
