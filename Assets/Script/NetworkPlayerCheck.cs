@@ -50,7 +50,7 @@ namespace Com.MyCompany.MyGame
                 GetComponent<Chara>().enabled = false;
                 //GetComponent<ProcessMyAttack>().enabled = false;
                 GetComponent<CameraWork>().enabled = false;
-                //GetComponentInChildren<AttackSword>().enabled = false;
+                //GetComponentInChildren<Attack>().enabled = false;
 
 
                 // 初期値を設定
@@ -90,17 +90,19 @@ namespace Com.MyCompany.MyGame
             // データの読み込み
             if (stream.isReading)
             {
+
                 position = (Vector3)stream.ReceiveNext();
                 rotation = (Quaternion)stream.ReceiveNext();
-                hp = (float)stream.ReceiveNext();
+                //hp = (float)stream.ReceiveNext();
                 speed = (float)stream.ReceiveNext();
                 attack = (bool)stream.ReceiveNext();
             }
             else
             {
+
                 stream.SendNext(transform.position);
                 stream.SendNext(transform.rotation);
-                stream.SendNext(hp);
+                //stream.SendNext(hp);
                 stream.SendNext(animator.GetFloat("Speed"));
                 stream.SendNext(animator.GetBool("Attack"));
             }
