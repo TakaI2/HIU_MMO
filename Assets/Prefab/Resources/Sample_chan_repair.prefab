@@ -41,6 +41,22 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!1 &1024216963682900
+GameObject:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 5
+  m_Component:
+  - component: {fileID: 4625395023735766}
+  - component: {fileID: 114585281415965546}
+  m_Layer: 0
+  m_Name: Mazzle
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
 --- !u!1 &1038193631452998
 GameObject:
   m_ObjectHideFlags: 1
@@ -3800,6 +3816,20 @@ Transform:
   m_Father: {fileID: 4014627252729560}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &4625395023735766
+Transform:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1024216963682900}
+  m_LocalRotation: {x: -0.000000008381901, y: -0.000000021886075, z: -0.000000019848807,
+    w: 1}
+  m_LocalPosition: {x: 0.008503322, y: -0.010504124, z: 0.0063410006}
+  m_LocalScale: {x: 0.25009483, y: 0.25009483, z: 0.0046007587}
+  m_Children: []
+  m_Father: {fileID: 4658172714200808}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &4626859882760004
 Transform:
   m_ObjectHideFlags: 1
@@ -3864,7 +3894,8 @@ Transform:
   m_LocalRotation: {x: -0.047431953, y: 0.015697464, z: 0.9481303, w: -0.3139312}
   m_LocalPosition: {x: -0.008611396, y: 0.0038783394, z: 0.004757671}
   m_LocalScale: {x: 0.49535805, y: 0.4922049, z: 26.927408}
-  m_Children: []
+  m_Children:
+  - {fileID: 4625395023735766}
   m_Father: {fileID: 4773209566818872}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -4853,13 +4884,13 @@ MonoBehaviour:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1287147268829074}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2e1152b7aac67904682c65bda4f28210, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   distance: 7
-  height: 3
+  height: 2
   heightSmoothLag: 0.3
   centerOffset: {x: 0, y: 0, z: 0}
   followOnStart: 1
@@ -4913,6 +4944,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   attackPower: 10
+--- !u!114 &114585281415965546
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1024216963682900}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 738138b0585e11b45b28b35469fe17c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  bullet: {fileID: 1687432170507066, guid: d617fceb1abf42a49a6f8aca37a3bfa1, type: 2}
+  bulletpower: 2000
 --- !u!114 &114590247346423256
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -4964,13 +5008,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8a32f5bead3e8441951a867b64f84d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  walkSpeed: 1.5
+  target: {fileID: 0}
+  walkSpeed: 6
   runSpeed: 10
-  cameraRotationLimit: 30
+  distance: 3
+  polarAngle: 45
+  azimuthalAngle: -90
+  minDistance: 1
+  maxDistance: 7
+  minPolarAngle: 5
+  maxPolarAngle: 125
+  mouseXSensitivity: 5
+  mouseYSensitivity: 5
+  scrollSensitivity: 5
+  height: 3
+  heightSmoothLag: 0.3
+  centerOffset: {x: 0, y: 1, z: 0}
+  cameraRotateLimit: 30
   cameraRotForward: 1
-  rotateSpeed: 2
-  xRotate: 0
-  mouseSpeed: 2
+  rotateSpeed: 10
+  mouseSpeed: 12
 --- !u!114 &114784676331110262
 MonoBehaviour:
   m_ObjectHideFlags: 1

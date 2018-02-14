@@ -8,15 +8,38 @@ namespace Com.MyCompany.MyGame
     public class Chara : MonoBehaviour
     {
 
+        public GameObject target;
+
         private Animator animator;
         private CharacterController cCon;
         private float x;
         private float y;
         private Vector3 velocity;
+        private float rotation;
+
+        private int center;
+        private float stair;
+
         [SerializeField]
         private float walkSpeed = 1.5f;
         [SerializeField]
         private float runSpeed = 2.5f;
+
+        [SerializeField] private float distance = 4.0f; //ターゲットとカメラの距離1
+        [SerializeField] private float polarAngle = 45.0f; // カメラのy軸角度
+        [SerializeField] private float azimuthalAngle = 45.0f; //カメラのx軸角度
+
+        [SerializeField] private float minDistance = 1.0f;
+        [SerializeField] private float maxDistance = 7.0f;
+        [SerializeField] private float minPolarAngle = 5.0f;
+        [SerializeField] private float maxPolarAngle = 75.0f;
+        [SerializeField] private float mouseXSensitivity = 5.0f;
+        [SerializeField] private float mouseYSensitivity = 5.0f;
+        [SerializeField] private float scrollSensitivity = 5.0f;
+
+
+        //移動しているか？
+        private bool moveFlag = false;
 
         //走っているか？
         private bool runFlag = false;
@@ -24,9 +47,24 @@ namespace Com.MyCompany.MyGame
         //キャラ視点のカメラ
         private Transform myCamera;
 
+        //カメラの高さ
+        public float height = 1.0f;
+
+        public float heightSmoothLag = 0.3f;
+
+        public Vector3 centerOffset = Vector3.zero;
+
+        private float targetHeight = 1.0f;
+
+        // Represents the current velocity, this value is modified by SmoothDamp() every time you call it.
+        private float heightVelocity = 0.0f;
+
+
+
+
         //キャラクター視点のカメラで回転できる限度
         [SerializeField]
-        private float cameraRotationLimit = 30f;
+        private float cameraRotateLimit = 30f;
 
         //カメラの上下の移動方法。マウスを上で上を向く場合はtrue,マウスを↑で下を向く場合はfalseを設定
         [SerializeField]
@@ -39,21 +77,12 @@ namespace Com.MyCompany.MyGame
         [SerializeField]
         private float rotateSpeed = 2f;
 
-        // カメラのx軸の角度変化値
-        [SerializeField]
-        private float xRotate;
-
-        // キャラクターのY軸の角度変化値
-        private float yRotate;
-
         //マウス移動のスピード
         [SerializeField]
         private float mouseSpeed = 2f;
 
-        // キャラクターのY軸の角度
+        //キャラ加えるに回転方向の力
         private Quaternion charaRotate;
-        // カメラのX軸の角度
-        private Quaternion cameraRotate;
 
         //キャラが回転中かどうか？
         private bool charaRotFlag = false;
@@ -64,17 +93,19 @@ namespace Com.MyCompany.MyGame
         {
             animator = GetComponent<Animator>();
             cCon = GetComponent<CharacterController>();
+            myCamera = Camera.main.transform;//GetComponentInChildren<Camera>().transform; //Camera.main.transform//ここでmainのカメラを取得するようにしたらうまくいくのでは？
             velocity = Vector3.zero;
             charaRotate = transform.localRotation;
-            cameraRotate = myCamera.localRotation;
+            center = (Screen.width) / 2;
         }
 
         // Update is called once per frame
         void Update()
         {
 
-            RotateChara();
+            RotateChara2();
             //RotateCamera();
+
 
             //　地面に接地してる時は初期化
             if (cCon.isGrounded)
@@ -82,11 +113,28 @@ namespace Com.MyCompany.MyGame
                 velocity = Vector3.zero;
 
                 velocity = (transform.forward * Input.GetAxis("Vertical") + transform.right * Input.GetAxis("Horizontal")).normalized;
+                //velocity = (transform.forward * Input.GetAxis("Vertical"));
+
+                //float rotation = Input.GetAxis("Horizontal");
+
+                //var rotVec = Quaternion.Euler(0f, rotation, 0f);
+
+               // velocity = rotVec * velocity;
 
                 //走るか歩くかでスピードを変える。
                 float speed = 0f;
 
-                if(Input.GetButton("Run"))
+                if(velocity != Vector3.zero)
+                {
+                    moveFlag = true;
+                }
+                else
+                {
+                    moveFlag = false;
+                }
+
+
+                if (Input.GetButton("Run"))
                 {
                     runFlag = true;
                     speed = runSpeed;
@@ -99,7 +147,7 @@ namespace Com.MyCompany.MyGame
                 }
                 velocity *= speed;
 
-                if(velocity.magnitude > 0f || charaRotFlag)
+                if (velocity.magnitude > 0f || charaRotFlag)
                 {
                     if (runFlag && !charaRotFlag)
                     {
@@ -125,11 +173,67 @@ namespace Com.MyCompany.MyGame
                 }
             }
 
-
             velocity.y += Physics.gravity.y * Time.deltaTime;
             cCon.Move(velocity * Time.deltaTime);
 
         }
+
+
+        void LateUpdate()
+        {
+
+           
+            if(moveFlag)
+            {
+                stair = (Input.mousePosition.x - center) / center * Time.deltaTime * rotateSpeed;
+            }
+            else
+            {
+                stair = 0;
+            }
+                
+            
+
+            updateAngle(Input.GetAxis("Mouse X") + stair, Input.GetAxis("Mouse Y"));
+            
+            updateDistance(Input.GetAxis("Mouse ScrollWheel"));
+
+            var lookAtPos = transform.position + centerOffset;　　　//変数lookAtPosに、targetに指定したオブジェクトの位置にオフセットを足した値を入力
+            updatePosition(lookAtPos);                                     //ターゲットの座標lookAtPosを計算。
+            myCamera.transform.LookAt(lookAtPos);                                   //カメラの角度をターゲットの座標lookAtPosに向ける。
+
+        }
+
+        void updateAngle(float x, float y) //カメラの角度を常にターゲットに向ける関数
+        {
+            x = azimuthalAngle - x * mouseXSensitivity;                     //現在のカメラのx軸角度から、マウスのx方向の移動量だけ角度を動かす。
+            azimuthalAngle = Mathf.Repeat(x, 360);                          //カメラのx軸角度は　360より大きくはならず、その間をループする。
+
+            y = polarAngle + y * mouseYSensitivity;                         //現在のカメラのy軸角度から、マウスのy方向の移動量だけ角度を動かす。
+            polarAngle = Mathf.Clamp(y, minPolarAngle, maxPolarAngle);      //カメラのy軸角度はminPolarAngle～maxPolarAngle間に制限する。
+
+
+        }
+
+        void updateDistance(float scroll) //カメラとターゲットの距離をマウススクロールで変化させるための関数。
+        {
+            scroll = distance - scroll * scrollSensitivity;                 //変数scrollの値を、カメラとターゲットとの距離からマウスのスクロール量を引いた値にする。
+            distance = Mathf.Clamp(scroll, minDistance, maxDistance);       //変数distanceの値を、minDistance, maxDistanceの間に制限する。
+        }
+
+        void updatePosition(Vector3 lookAtPos) //
+        {
+            var da = azimuthalAngle * Mathf.Deg2Rad;                        //x軸方向の角度を°からラジアンに変換
+            var dp = polarAngle * Mathf.Deg2Rad;                            //y軸方向の角度を°からラジアンに変換
+            myCamera.transform.position = new Vector3(
+                lookAtPos.x + distance * Mathf.Sin(dp) * Mathf.Cos(da),     //ターゲットが移動した際に、角度とlookAtPosのx方向にに　距離 * 
+                lookAtPos.y + distance * Mathf.Cos(dp),
+                lookAtPos.z + distance * Mathf.Sin(dp) * Mathf.Sin(da));
+        }
+    
+
+
+
 
         //キャラクターの角度を変更
         void RotateChara()
@@ -155,6 +259,62 @@ namespace Com.MyCompany.MyGame
         }
 
 
+        //キャラクターの向き変更関数（改良)
+        void RotateChara2()
+        {
+
+
+            float rotation = Input.GetAxis("Mouse X");
+
+            //var rotVec = Quaternion.Euler(0f, rotation, 0f);
+            //var rotVec = new Vector3(0, rotation, 0)*100;
+            // velocity = rotVec * velocity;
+
+
+
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+            Vector3 Horizontal_direction = ray.direction;
+
+            var charaRotation = Quaternion.LookRotation(Horizontal_direction);
+            charaRotation.x = 0;
+            charaRotation.z = 0;
+
+            transform.rotation = charaRotation;
+
+
+
+
+            //transform.rotation = Quaternion.Slerp(transform.localRotation, charaRotation, rotateSpeed * Time.deltaTime);
+        }
+
+
+
+/*
+        void RotateCamera()
+        {
+            float xRotate = Input.GetAxis("Mouse Y") * mouseSpeed;
+
+            // マウスを上に移動した時に上を向かせるため、角度を反転させる.
+
+            if(cameraRotForward)
+            {
+                xRotate *= -1;
+            }
+
+            // 角度を計算
+            cameraRotate *= Quaternion.Euler(xRotate, 0f, 0f);
+
+            // カメラのX軸の角度が一定を超えないように限度を設ける。
+            var resultYRot = Mathf.Clamp(Mathf.DeltaAngle(initCameraRot.eulerAngles.x, cameraRotate.eulerAngles.x), -cameraRotateLimit, cameraRotateLimit);
+
+            cameraRotate = Quaternion.Euler(resultYRot, cameraRotate.eulerAngles.y, cameraRotate.eulerAngles.z);
+
+            myCamera.localRotation = Quaternion.Slerp(myCamera.localRotation, cameraRotate, rotateSpeed * Time.deltaTime);
+
+        }
+
+    */
 
 
     }
