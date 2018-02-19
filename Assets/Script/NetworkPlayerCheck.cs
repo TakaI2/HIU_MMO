@@ -17,6 +17,15 @@ namespace Com.MyCompany.MyGame
         float speed;
         bool attack;
 
+        //武器を取得
+        //GameObject refObj;
+
+        private PhotonView m_photonView;
+
+        //Quaternion muzzleRotation; //muzzleの角度を同期するためのデータ
+
+        
+
         //スムーズ度合
         float smooth = 10f;
 
@@ -25,6 +34,7 @@ namespace Com.MyCompany.MyGame
         {
 
             animator = GetComponent<Animator>();
+           
 
             CameraWork _cameraWork = this.gameObject.GetComponent<CameraWork>();  //CameraWorkが認識されないことがあるが、Unityを立ち上げ直したら治ってる。
 
@@ -48,21 +58,26 @@ namespace Com.MyCompany.MyGame
             if (!photonView.isMine)
             {
                 GetComponent<Chara>().enabled = false;
-                //GetComponent<ProcessMyAttack>().enabled = false;
-                GetComponent<CameraWork>().enabled = false;
-                //GetComponentInChildren<Attack>().enabled = false;
+                GetComponent<ProcessAttack>().enabled = false;
+                //GetComponent<CameraWork>().enabled = false;
+                GetComponentInChildren<Attack>().enabled = false;
+                //GetComponentInChildren<shooter>().enabled = false;
 
+                //refObj = GameObject.Find("Muzzle");
 
                 // 初期値を設定
                 position = transform.position;
                 rotation = transform.rotation;
                 //hp = GetComponent<Status>().GetHp();
 
+
                 speed = animator.GetFloat("Speed");
                 attack = animator.GetBool("Attack");
 
                 // 自分のキャラクター以外のデータを同期
                 StartCoroutine("UpdateMove");
+
+
 
             }
         }
@@ -81,6 +96,7 @@ namespace Com.MyCompany.MyGame
 
                 yield return null;
             }
+
         }
         
         
@@ -93,6 +109,7 @@ namespace Com.MyCompany.MyGame
 
                 position = (Vector3)stream.ReceiveNext();
                 rotation = (Quaternion)stream.ReceiveNext();
+                //CastTrigger = (bool)stream.ReceiveNext();
                 //hp = (float)stream.ReceiveNext();
                 speed = (float)stream.ReceiveNext();
                 attack = (bool)stream.ReceiveNext();
@@ -102,6 +119,7 @@ namespace Com.MyCompany.MyGame
 
                 stream.SendNext(transform.position);
                 stream.SendNext(transform.rotation);
+                //stream.SendNext(CastTrigger);
                 //stream.SendNext(hp);
                 stream.SendNext(animator.GetFloat("Speed"));
                 stream.SendNext(animator.GetBool("Attack"));
@@ -110,7 +128,9 @@ namespace Com.MyCompany.MyGame
         //Update is called once per frame
         void Update()
         {
-
+            //shooter s1 = refObj.GetComponent<shooter>();
+            //m_photonView.RPC("shot", PhotonTargets.All, attack);
+            //s1.shot(attack);
         }
 
 

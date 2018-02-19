@@ -44,4 +44,5 @@ MonoBehaviour:
   - TaggedPlayer
   - SetName
   - Damage
+  - shot
   DisableAutoOpenWizard: 1

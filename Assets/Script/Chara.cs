@@ -25,6 +25,8 @@ namespace Com.MyCompany.MyGame
         [SerializeField]
         private float runSpeed = 2.5f;
 
+
+        //カメラ制御用変数
         [SerializeField] private float distance = 4.0f; //ターゲットとカメラの距離1
         [SerializeField] private float polarAngle = 45.0f; // カメラのy軸角度
         [SerializeField] private float azimuthalAngle = 45.0f; //カメラのx軸角度
@@ -97,6 +99,7 @@ namespace Com.MyCompany.MyGame
             velocity = Vector3.zero;
             charaRotate = transform.localRotation;
             center = (Screen.width) / 2;
+
         }
 
         // Update is called once per frame
@@ -170,7 +173,9 @@ namespace Com.MyCompany.MyGame
                 )
                 {
                     animator.SetTrigger("Attack");
+
                 }
+
             }
 
             velocity.y += Physics.gravity.y * Time.deltaTime;
@@ -287,35 +292,7 @@ namespace Com.MyCompany.MyGame
 
             //transform.rotation = Quaternion.Slerp(transform.localRotation, charaRotation, rotateSpeed * Time.deltaTime);
         }
-
-
-
-/*
-        void RotateCamera()
-        {
-            float xRotate = Input.GetAxis("Mouse Y") * mouseSpeed;
-
-            // マウスを上に移動した時に上を向かせるため、角度を反転させる.
-
-            if(cameraRotForward)
-            {
-                xRotate *= -1;
-            }
-
-            // 角度を計算
-            cameraRotate *= Quaternion.Euler(xRotate, 0f, 0f);
-
-            // カメラのX軸の角度が一定を超えないように限度を設ける。
-            var resultYRot = Mathf.Clamp(Mathf.DeltaAngle(initCameraRot.eulerAngles.x, cameraRotate.eulerAngles.x), -cameraRotateLimit, cameraRotateLimit);
-
-            cameraRotate = Quaternion.Euler(resultYRot, cameraRotate.eulerAngles.y, cameraRotate.eulerAngles.z);
-
-            myCamera.localRotation = Quaternion.Slerp(myCamera.localRotation, cameraRotate, rotateSpeed * Time.deltaTime);
-
-        }
-
-    */
-
+     
 
     }
 
