@@ -14,7 +14,8 @@ namespace Com.MyCompany.MyGame
         public InputField roomName;
         public InputField playerName;
         public GameObject logoutUI;
-        
+
+        private int charaNo = 0;
 
         // Use this for initialization
         void Start()
@@ -113,6 +114,7 @@ namespace Com.MyCompany.MyGame
             //ドロップダウンリストをリセット
             roomList.ClearOptions();
 
+
             //部屋が一つでもあればドロップダウンリストに追加
             if (list.Count != 0)
             {
@@ -139,7 +141,15 @@ namespace Com.MyCompany.MyGame
             }
 
             // ログインを監視する
-            StartCoroutine("SetPlayer", 0f);
+
+            if(charaNo == 0)
+            {
+                StartCoroutine("SetPlayer", 0f);
+            }
+            else
+            {
+                StartCoroutine("SetPlayer2", 0f);
+            }
 
         }
 
@@ -148,8 +158,26 @@ namespace Com.MyCompany.MyGame
         IEnumerator SetPlayer(float time)
         {
             yield return new WaitForSeconds(time);
-            // ネットワークごしにキャラをインスタンス化
+            // ネットワークごしにキャラをインスタンス化 ここで、キャラを選択する。
+
+
+            GameObject player = PhotonNetwork.Instantiate("Yusha_rigify", Vector3.up, Quaternion.identity, 0);
+            
+          
+              //  GameObject player = PhotonNetwork.Instantiate("Sample_chan_repair", Vector3.up, Quaternion.identity, 0);
+            
+
+            player.GetPhotonView().RPC("SetName", PhotonTargets.AllBuffered, PhotonNetwork.player.NickName);
+        }
+
+        //この雑な書き方はあとで改めるべし
+        IEnumerator SetPlayer2(float time)
+        {
+            yield return new WaitForSeconds(time);
+            // ネットワークごしにキャラをインスタンス化 ここで、キャラを選択する。
+
             GameObject player = PhotonNetwork.Instantiate("Sample_chan_repair", Vector3.up, Quaternion.identity, 0);
+
 
             player.GetPhotonView().RPC("SetName", PhotonTargets.AllBuffered, PhotonNetwork.player.NickName);
         }
@@ -183,6 +211,18 @@ namespace Com.MyCompany.MyGame
         {
             Debug.Log("退室");
             logoutUI.SetActive(false);
+        }
+
+
+        //キャラクターを選択する。
+        public void SelectSworder()
+        {
+            charaNo = 0;
+        }
+
+        public void SelectMage()
+        {
+            charaNo = 1;
         }
 
 
