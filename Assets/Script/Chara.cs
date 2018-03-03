@@ -10,6 +10,11 @@ namespace Com.MyCompany.MyGame
 
         public GameObject target;
 
+        public Slider _PlayerHealthSlider;
+        public float hp = 30;        //体力 
+
+
+
         private Animator animator;
         private CharacterController cCon;
         private float x;
@@ -63,7 +68,6 @@ namespace Com.MyCompany.MyGame
 
 
 
-
         //キャラクター視点のカメラで回転できる限度
         [SerializeField]
         private float cameraRotateLimit = 30f;
@@ -99,6 +103,9 @@ namespace Com.MyCompany.MyGame
             velocity = Vector3.zero;
             charaRotate = transform.localRotation;
             center = (Screen.width) / 2;
+
+            _PlayerHealthSlider = GameObject.Find("Slider").GetComponent<Slider>();
+            
 
         }
 
@@ -177,6 +184,9 @@ namespace Com.MyCompany.MyGame
                 }
 
             }
+
+      
+
 
             velocity.y += Physics.gravity.y * Time.deltaTime;
             cCon.Move(velocity * Time.deltaTime);
@@ -288,11 +298,29 @@ namespace Com.MyCompany.MyGame
             transform.rotation = charaRotation;
 
 
-
-
             //transform.rotation = Quaternion.Slerp(transform.localRotation, charaRotation, rotateSpeed * Time.deltaTime);
         }
-     
+
+        [PunRPC]
+        public void Damage(int damage)
+        {
+            Debug.Log("敵に" + damage + "ポイント与えた");
+            this.hp -= damage;
+
+            _PlayerHealthSlider.value = hp;
+
+            if (this.hp <= 0)
+            {
+                Dead();
+            }
+        }
+
+        void Dead()
+        {
+            Debug.Log("敵を倒した");
+            Destroy(gameObject);
+        }
+
 
     }
 

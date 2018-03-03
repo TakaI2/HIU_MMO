@@ -16,7 +16,16 @@ namespace Com.MyCompany.MyGame
                 col.gameObject.GetComponent<EnemyBoss>().Damage(attackPower);
             }
 
+            /*
+            if (col.gameObject.tag == "Player")
+            {
+                col.gameObject.GetComponent<Chara>().Damage(attackPower);
+            }
+            */
+
         }
+
+
 
     }
 }

@@ -9,8 +9,9 @@ namespace StateMachineSample
     {
         Wander,
         Pursuit,
-        Attack,
-        Explode,
+        LongAttack,
+        ShortAttack,
+        //Explode,
     }
 
 
@@ -19,8 +20,8 @@ namespace StateMachineSample
     {
 
         public GameObject blockPrefab1;
-        public GameObject blockPrefab2;
-        public Transform muzzle;
+        //public GameObject blockPrefab2;
+        //public Transform muzzle;
         public float bulletpower;
 
         public int maxLife;
@@ -36,13 +37,23 @@ namespace StateMachineSample
         private float RandomBiasZ;
 
         private Transform player;
+        private Animator animator;
+        public Transform head;
+
+
+
+        private Vector3 velocity;
 
         public float speed;
         public float rotationSmooth;
-        public float attackInterval;
+        public float headRotationSmooth;
 
-        public float pursuitSqrDistance;
-        public float attackSqrDistance;
+        public float longattackInterval;
+        public float shortattackInterval;
+
+        public float attackSqrDistance1;  //遠距離攻撃に至る距離
+        public float pursuitSqrDistance; //追跡行動に至る距離
+        public float attackSqrDistance2;  //近距離攻撃に至る距離
         public float margin;
 
         public float changeTargetSqrDistance;
@@ -57,18 +68,20 @@ namespace StateMachineSample
         {
 
             cCon = GetComponent<CharacterController>();
+            animator = GetComponent<Animator>();
 
             RandomBiasX = transform.position.x;
             RandomBiasZ = transform.position.z;
 
-            player = GameObject.FindWithTag("Player").transform;
+            //player = GameObject.FindWithTag("Player").transform; 
 
             life = maxLife;
 
             stateList.Add(new StateWander(this));
             stateList.Add(new StatePursuit(this));
-            stateList.Add(new StateAttack(this));
-            stateList.Add(new StateExplode(this));
+            stateList.Add(new StateLongAttack(this));
+            stateList.Add(new StateShortAttack(this));
+            //stateList.Add(new StateExplode(this));
 
             stateMachine = new StateMachine<Enemy>();
 
@@ -76,20 +89,12 @@ namespace StateMachineSample
 
         }
 
-        public void TakeDamage()
-        {
-            life--;
-            if (life <= 0)
-            {
-                ChangeState(EnemyState.Explode);
-            }
-        }
 
 
 
         #region States
 
-        ///state:  徘徊
+        ///state:  立ち尽くす
 
         private class StateWander : State<Enemy>
         {
@@ -101,18 +106,29 @@ namespace StateMachineSample
             public override void Enter()
             {
                 // 初めの目標地点をランダムに指定。
-                targetPosition = GetRandomPosition();
+                //targetPosition = GetRandomPosition();
+
+                //owner.player = GameObject.FindWithTag("Player").transform;
             }
 
             public override void Execute()
             {
 
-                // プレイヤーとの距離が小さければ、追跡ステートに遷移
-                float sqrDistanceToPlayer = Vector3.SqrMagnitude(owner.transform.position - owner.player.position);
-                if (sqrDistanceToPlayer < owner.pursuitSqrDistance - owner.margin)
+
+
+                if(GameObject.FindWithTag("Player"))
                 {
-                    owner.ChangeState(EnemyState.Pursuit);
+
+                    owner.player = GameObject.FindWithTag("Player").transform;
+
+                    // プレイヤーとの距離が第1攻撃距離より小さければ、遠距距離攻撃ステートに遷移
+                    float sqrDistanceToPlayer = Vector3.SqrMagnitude(owner.transform.position - owner.player.position);
+                    if (sqrDistanceToPlayer < owner.attackSqrDistance1 - owner.margin)
+                    {
+                        owner.ChangeState(EnemyState.LongAttack);
+                    }
                 }
+
 
                 // 目標地点との距離が小さければ、次のランダムな目標地点を設定する
                 float sqrDistanceToTarget = Vector3.SqrMagnitude(owner.transform.position - targetPosition);
@@ -120,25 +136,30 @@ namespace StateMachineSample
                 {
                     wallcorid = false;
 
-                    targetPosition = GetRandomPosition();
+                    //targetPosition = GetRandomPosition();
                 }
 
                 //目標地点の方向を向く
 
-                Quaternion targetRotation = Quaternion.LookRotation(targetPosition - owner.transform.position);
-                owner.transform.rotation = Quaternion.Slerp(owner.transform.rotation, targetRotation, Time.deltaTime * owner.rotationSmooth);
+                //Quaternion targetRotation = Quaternion.LookRotation(targetPosition - owner.transform.position);
+                //owner.transform.rotation = Quaternion.Slerp(owner.transform.rotation, targetRotation, Time.deltaTime * owner.rotationSmooth);
+
+
 
 
                 // 前方に進む
-                owner.transform.Translate(Vector3.forward * owner.speed * Time.deltaTime);
+                //owner.transform.Translate(Vector3.forward * owner.speed * Time.deltaTime);
 
+                //owner.cCon.Move(Vector3.forward * owner.speed * Time.deltaTime);
 
+                owner.animator.SetFloat("Speed", 0f);
 
             }
 
             public override void Exit()
             {
                 //   Instantiate(owner.blockPrefab1, owner.transform.position, Quaternion.identity);
+                //owner.animator.SetFloat("Speed", 0f);
             }
 
 
@@ -170,17 +191,18 @@ namespace StateMachineSample
             {
                 float sqrDistanceToPlayer = Vector3.SqrMagnitude(owner.transform.position - owner.player.position);
 
-                // プレイヤーとの距離が小さければ攻撃ステートに遷移
-                if (sqrDistanceToPlayer < owner.attackSqrDistance - owner.margin)
+                
+                // プレイヤーとの距離が第2攻撃距離より小さければ近距離攻撃ステートに遷移
+                if (sqrDistanceToPlayer < owner.attackSqrDistance2 - owner.margin)
                 {
-                    owner.ChangeState(EnemyState.Attack);
+                    owner.ChangeState(EnemyState.ShortAttack);
                 }
+                
 
-
-                // プレイヤーとの距離が大きければ、徘徊ステートに遷移
+                // プレイヤーとの距離が第２攻撃距離より大きければ、遠距離攻撃ステートに遷移
                 if (sqrDistanceToPlayer > owner.pursuitSqrDistance + owner.margin)
                 {
-                    owner.ChangeState(EnemyState.Wander);
+                    owner.ChangeState(EnemyState.LongAttack);
                 }
 
                 // プレイヤーの方向を向く
@@ -189,48 +211,76 @@ namespace StateMachineSample
 
                 // 前方に進む
                 owner.transform.Translate(Vector3.forward * owner.speed * Time.deltaTime);
+                //owner.cCon.Move(Vector3.forward * owner.speed * Time.deltaTime);
+                owner.animator.SetFloat("Speed", 2.1f);
+
 
             }
 
             public override void Exit()
             {
-
+                owner.animator.SetFloat("Speed", 0f);
             }
 
 
 
         }
 
-
         /// <summary>
-        /// ステート: 攻撃
+        /// ステート: 遠距離攻撃
         /// </summary>
-        private class StateAttack : State<Enemy>
+        private class StateLongAttack : State<Enemy>
         {
             private float lastAttackTime;
 
-            public StateAttack(Enemy owner) : base(owner) { }
+            public StateLongAttack(Enemy owner) : base(owner) { }
 
             public override void Enter()
             {
                 //    Instantiate(owner.blockPrefab2, owner.muzzle.position, owner.muzzle.rotation);
+
+
             }
+
 
             public override void Execute()
             {
-                // プレイヤーとの距離が大きければ、追跡ステートに遷移
+
+                owner.animator.SetFloat("Speed", 0f);
+
+                // プレイヤーとの距離が第一攻撃距離より大きければ、待機ステートに遷移
                 float sqrDistanceToPlayer = Vector3.SqrMagnitude(owner.transform.position - owner.player.position);
-                if (sqrDistanceToPlayer > owner.attackSqrDistance + owner.margin)
+                if (sqrDistanceToPlayer > owner.attackSqrDistance1 + owner.margin)
+                {
+                    owner.ChangeState(EnemyState.Wander);
+                }
+
+
+                // プレイヤーとの距離が追跡開始距離より小さければ、追跡ステートに遷移
+                if (sqrDistanceToPlayer < owner.pursuitSqrDistance - owner.margin)
                 {
                     owner.ChangeState(EnemyState.Pursuit);
                 }
 
 
+                // プレイヤーとの距離が近くなれば、追跡ステートに遷移
+
+
+                // 身体をプレイヤーの向きに向ける、
+                Quaternion bodyRotation = Quaternion.LookRotation(owner.player.position - owner.transform.position);
+                owner.transform.rotation = Quaternion.Slerp(owner.transform.rotation, bodyRotation, Time.deltaTime * owner.rotationSmooth);
+
+                // 砲台をプレイヤーの方向に向ける
+                Quaternion targetRotation = Quaternion.LookRotation(owner.player.position - owner.head.position);
+
+                targetRotation.z = 0;
+                owner.head.rotation = Quaternion.Slerp(owner.head.rotation, targetRotation, Time.deltaTime * owner.headRotationSmooth);
+
                 // 一定間隔で弾丸を発射する
-                if (Time.time > lastAttackTime + owner.attackInterval)
+                if (Time.time > lastAttackTime + owner.longattackInterval)
                 {
                     //炸薬により実体弾を打ち出すタイプ。
-                    GameObject laserInstance = GameObject.Instantiate(owner.blockPrefab1, owner.muzzle.position, owner.muzzle.rotation);
+                    GameObject laserInstance = GameObject.Instantiate(owner.blockPrefab1, owner.head.position, owner.head.rotation);
                     laserInstance.GetComponent<Rigidbody>().AddForce(laserInstance.transform.forward * owner.bulletpower);
                     Destroy(laserInstance, 5);
 
@@ -243,28 +293,57 @@ namespace StateMachineSample
             public override void Exit() { }
         }
 
+
+
+
         /// <summary>
-        /// ステート: 爆発
+        /// ステート: 近距離攻撃
         /// </summary>
-        private class StateExplode : State<Enemy>
+        private class StateShortAttack : State<Enemy>
         {
-            public StateExplode(Enemy owner) : base(owner) { }
+            private float lastAttackTime;
+
+            public StateShortAttack(Enemy owner) : base(owner) { }
 
             public override void Enter()
             {
-                // ランダムな吹き飛ぶ力を加える
-                Vector3 force = Vector3.up * 1000f + Random.insideUnitSphere * 300f;
-                owner.GetComponent<Rigidbody>().AddForce(force);
+                //    Instantiate(owner.blockPrefab2, owner.muzzle.position, owner.muzzle.rotation);
 
-                // ランダムに吹き飛ぶ回転力を加える
-                Vector3 torque = new Vector3(Random.Range(-10000f, 10000f), Random.Range(-10000f, 10000f), Random.Range(-10000f, 10000f));
-                owner.GetComponent<Rigidbody>().AddTorque(torque);
 
-                // 1秒後に自身を消去する
-                Destroy(owner.gameObject, 1.0f);
             }
 
-            public override void Execute() { }
+
+            public override void Execute()
+            {
+
+                owner.animator.SetFloat("Speed", 0f);
+
+                // プレイヤーとの距離が第2攻撃距離より大きければ、追跡ステートに遷移
+                float sqrDistanceToPlayer = Vector3.SqrMagnitude(owner.transform.position - owner.player.position);
+                if (sqrDistanceToPlayer > owner.attackSqrDistance2 + owner.margin)
+                {
+                    owner.ChangeState(EnemyState.Pursuit);
+                }
+
+
+                // プレイヤーとの距離が近くなれば、追跡ステートに遷移
+
+
+                // 身体をプレイヤーの向きに向ける、
+                Quaternion bodyRotation = Quaternion.LookRotation(owner.player.position - owner.transform.position);
+                owner.transform.rotation = Quaternion.Slerp(owner.transform.rotation, bodyRotation, Time.deltaTime * owner.rotationSmooth);
+
+                // 一定間隔で剣を振り下ろす。
+                if (Time.time > lastAttackTime + owner.shortattackInterval)
+                {
+                    owner.animator.SetBool("Attack", true);
+
+                    // Instantiate(owner.blockPrefab1, owner.muzzle.position, owner.muzzle.rotation);
+                    lastAttackTime = Time.time;
+                }
+                
+                
+            }
 
             public override void Exit() { }
         }

@@ -9,6 +9,7 @@ namespace Com.MyCompany.MyGame
 
         public GameObject hitEffect;
         public int power;
+        public string target;
 
         // Use this for initialization
         void OnCollisionEnter(Collision col)
@@ -22,11 +23,20 @@ namespace Com.MyCompany.MyGame
             }
 
 
-            if (col.gameObject.tag == "Enemy")
+            if (col.gameObject.tag == target)
             {
                 //Destroy(col.collider.gameObject);
-                col.gameObject.GetComponent<EnemyBoss>().Damage(power);
-                // Destroy(gameObject);
+                if (target == "Player")
+                {
+                    col.gameObject.GetComponent<Chara>().Damage(power);
+                }
+                else if(target == "Enemy")
+                {
+                    col.gameObject.GetComponent<EnemyBoss>().Damage(power);
+                }
+
+
+                Destroy(gameObject);
 
             }
 

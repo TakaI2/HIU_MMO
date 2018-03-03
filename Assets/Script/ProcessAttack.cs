@@ -10,6 +10,7 @@ namespace Com.MyCompany.MyGame
 
         public Collider col;
 
+
         void AttackStart()
         {
             col.enabled = true;
