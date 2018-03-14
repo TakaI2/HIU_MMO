@@ -9,11 +9,19 @@ namespace Com.MyCompany.MyGame
 
         public int attackPower; //攻撃力
 
+        private PhotonView m_photonView = null;
+
+        private int playerCount;
+
         void OnTriggerEnter(Collider col)
         {
+            playerCount = PhotonNetwork.room.PlayerCount;
+
             if (col.gameObject.tag == "Enemy")
             {
-                col.gameObject.GetComponent<EnemyBoss>().Damage(attackPower);
+                m_photonView = col.gameObject.GetComponent<PhotonView>();
+                m_photonView.RPC("Damage", PhotonTargets.AllBuffered, (attackPower / playerCount));
+
             }
 
             /*

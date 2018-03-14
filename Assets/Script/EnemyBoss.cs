@@ -11,7 +11,7 @@ namespace Com.MyCompany.MyGame
 
         void Start()
         {
-            hp = 50;
+            hp = 500;
         }
 
         [PunRPC]

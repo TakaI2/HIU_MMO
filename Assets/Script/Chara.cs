@@ -10,8 +10,8 @@ namespace Com.MyCompany.MyGame
 
         public GameObject target;
 
-        public Slider _PlayerHealthSlider;
-        public float hp = 30;        //体力 
+       // public Slider _PlayerHealthSlider;
+       // public float hp = 30;        //体力 
 
 
 
@@ -104,7 +104,7 @@ namespace Com.MyCompany.MyGame
             charaRotate = transform.localRotation;
             center = (Screen.width) / 2;
 
-            _PlayerHealthSlider = GameObject.Find("Slider").GetComponent<Slider>();
+            //_PlayerHealthSlider = GameObject.Find("Slider").GetComponent<Slider>();
             
 
         }
@@ -301,6 +301,7 @@ namespace Com.MyCompany.MyGame
             //transform.rotation = Quaternion.Slerp(transform.localRotation, charaRotation, rotateSpeed * Time.deltaTime);
         }
 
+        /*
         [PunRPC]
         public void Damage(int damage)
         {
@@ -320,7 +321,7 @@ namespace Com.MyCompany.MyGame
             Debug.Log("敵を倒した");
             Destroy(gameObject);
         }
-
+        */
 
     }
 

@@ -41,6 +41,7 @@ namespace Com.MyCompany.MyGame
 
             //サーバ接続状態を表示
             text.text = PhotonNetwork.connectionStateDetailed.ToString();
+
         }
 
 
@@ -142,7 +143,8 @@ namespace Com.MyCompany.MyGame
 
             // ログインを監視する
 
-            if(charaNo == 0)
+
+            if (charaNo == 0)
             {
                 StartCoroutine("SetPlayer", 0f);
             }

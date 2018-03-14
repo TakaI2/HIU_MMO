@@ -13,13 +13,13 @@ namespace Com.MyCompany.MyGame
         // Use this for initialization
         void Start()
         {
-            namePlate = nameText.transform.parent.gameObject;
+            namePlate = nameText.transform.parent.gameObject;  //ネームプレートは親の位置に合わせて動くようにする。
         }
 
 
         void LateUpdate()
         {
-            namePlate.transform.rotation = Camera.main.transform.rotation;
+            namePlate.transform.rotation = Camera.main.transform.rotation; //ネームプレートは
         }
 
         // Update is called once per frame

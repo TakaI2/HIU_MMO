@@ -24,8 +24,7 @@ namespace StateMachineSample
         //public Transform muzzle;
         public float bulletpower;
 
-        public int maxLife;
-
+        //public int maxLife;
 
 
 
@@ -58,6 +57,7 @@ namespace StateMachineSample
 
         public float changeTargetSqrDistance;
 
+        
 
         private void Start()
         {
@@ -75,7 +75,7 @@ namespace StateMachineSample
 
             //player = GameObject.FindWithTag("Player").transform; 
 
-            life = maxLife;
+            //life = maxLife;
 
             stateList.Add(new StateWander(this));
             stateList.Add(new StatePursuit(this));
@@ -86,6 +86,8 @@ namespace StateMachineSample
             stateMachine = new StateMachine<Enemy>();
 
             ChangeState(EnemyState.Wander);
+
+       
 
         }
 
@@ -109,25 +111,31 @@ namespace StateMachineSample
                 //targetPosition = GetRandomPosition();
 
                 //owner.player = GameObject.FindWithTag("Player").transform;
+
+                /*
+                if (GameObject.FindWithTag("Player"))
+                {
+                    owner.player = GameObject.FindWithTag("Player").transform;
+                }
+                */
+
             }
 
             public override void Execute()
             {
 
-
-
-                if(GameObject.FindWithTag("Player"))
+                if (GameObject.FindWithTag("Player"))
                 {
-
                     owner.player = GameObject.FindWithTag("Player").transform;
-
-                    // プレイヤーとの距離が第1攻撃距離より小さければ、遠距距離攻撃ステートに遷移
-                    float sqrDistanceToPlayer = Vector3.SqrMagnitude(owner.transform.position - owner.player.position);
-                    if (sqrDistanceToPlayer < owner.attackSqrDistance1 - owner.margin)
-                    {
-                        owner.ChangeState(EnemyState.LongAttack);
-                    }
                 }
+
+                // プレイヤーとの距離が第1攻撃距離より小さければ、遠距距離攻撃ステートに遷移
+                float sqrDistanceToPlayer = Vector3.SqrMagnitude(owner.transform.position - owner.player.position);
+                if (sqrDistanceToPlayer < owner.attackSqrDistance1 - owner.margin)
+                {
+                        owner.ChangeState(EnemyState.LongAttack);
+                }
+                
 
 
                 // 目標地点との距離が小さければ、次のランダムな目標地点を設定する
@@ -250,8 +258,9 @@ namespace StateMachineSample
 
                 // プレイヤーとの距離が第一攻撃距離より大きければ、待機ステートに遷移
                 float sqrDistanceToPlayer = Vector3.SqrMagnitude(owner.transform.position - owner.player.position);
-                if (sqrDistanceToPlayer > owner.attackSqrDistance1 + owner.margin)
+                if ((sqrDistanceToPlayer > owner.attackSqrDistance1 + owner.margin) || (lastAttackTime >= 15))
                 {
+                    owner.player = null;
                     owner.ChangeState(EnemyState.Wander);
                 }
 
@@ -287,6 +296,7 @@ namespace StateMachineSample
 
                     // Instantiate(owner.blockPrefab1, owner.muzzle.position, owner.muzzle.rotation);
                     lastAttackTime = Time.time;
+
                 }
             }
 

@@ -68,7 +68,7 @@ namespace Com.MyCompany.MyGame
                 // 初期値を設定
                 position = transform.position;
                 rotation = transform.rotation;
-                //hp = GetComponent<Status>().GetHp();
+                //hp = GetComponent<Status>().hp;
 
 
                 speed = animator.GetFloat("Speed");

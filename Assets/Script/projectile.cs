@@ -8,12 +8,16 @@ namespace Com.MyCompany.MyGame
     {
 
         public GameObject hitEffect;
-        public int power;
+        public int attackPower;
         public string target;
+
+        private PhotonView m_photonView = null;
+        private int playerCount;
 
         // Use this for initialization
         void OnCollisionEnter(Collision col)
         {
+            playerCount = PhotonNetwork.room.PlayerCount;
 
             foreach (ContactPoint point in col.contacts)
             {
@@ -28,11 +32,15 @@ namespace Com.MyCompany.MyGame
                 //Destroy(col.collider.gameObject);
                 if (target == "Player")
                 {
-                    col.gameObject.GetComponent<Chara>().Damage(power);
+                    m_photonView = col.gameObject.GetComponent<PhotonView>();
+                    m_photonView.RPC("Damage", PhotonTargets.AllBuffered, attackPower/playerCount);
+                    //col.gameObject.GetComponent<Status>().Damage(power);
                 }
                 else if(target == "Enemy")
                 {
-                    col.gameObject.GetComponent<EnemyBoss>().Damage(power);
+                   // col.gameObject.GetComponent<EnemyBoss>().Damage(attackPower);
+                    m_photonView = col.gameObject.GetComponent<PhotonView>();
+                    m_photonView.RPC("Damage", PhotonTargets.AllBuffered, attackPower / playerCount);
                 }
 
 
