@@ -16,6 +16,7 @@ namespace Com.MyCompany.MyGame
         public GameObject logoutUI;
 
         private int charaNo = 0;
+        private Vector3 respawnpoint;
 
         // Use this for initialization
         void Start()
@@ -31,6 +32,7 @@ namespace Com.MyCompany.MyGame
             PhotonNetwork.ConnectUsingSettings("0.1");
 
 
+            //respawnpoint = GameObject.FindWithTag("Respawn").transform.position;
         }
 
 
@@ -131,6 +133,8 @@ namespace Com.MyCompany.MyGame
             logoutUI.SetActive(true);
             Debug.Log("入室");
 
+            respawnpoint = GameObject.FindWithTag("Respawn").transform.position;
+
             //InputFieldに入力した名前を設定
             if (playerName.text != "")
             {
@@ -163,11 +167,9 @@ namespace Com.MyCompany.MyGame
             // ネットワークごしにキャラをインスタンス化 ここで、キャラを選択する。
 
 
-            GameObject player = PhotonNetwork.Instantiate("Yusha_rigify", Vector3.up, Quaternion.identity, 0);
-            
-          
-              //  GameObject player = PhotonNetwork.Instantiate("Sample_chan_repair", Vector3.up, Quaternion.identity, 0);
-            
+            //GameObject player = PhotonNetwork.Instantiate("Yusha_rigify", Vector3.up, Quaternion.identity, 0);
+
+            GameObject player = PhotonNetwork.Instantiate("Yusha_rigify", respawnpoint, Quaternion.identity, 0);
 
             player.GetPhotonView().RPC("SetName", PhotonTargets.AllBuffered, PhotonNetwork.player.NickName);
         }

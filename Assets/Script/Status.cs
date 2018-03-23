@@ -40,6 +40,10 @@ public class Status : MonoBehaviour {
     void Dead()
     {
         Debug.Log("敵を倒した");
+
+        //ここに、死亡モーションの命令を入れる。
+
+
         Destroy(gameObject);
     }
 

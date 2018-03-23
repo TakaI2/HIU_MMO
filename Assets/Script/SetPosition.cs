@@ -7,7 +7,7 @@ public class SetPosition : MonoBehaviour {
     //初期位置
     private Vector3 startPosition;
     //目的地
-    private Vector3 destination;
+    private Vector3 destination; //次に移動する目標地点
 
 	// Use this for initialization
 	void Start () {
@@ -32,7 +32,7 @@ public class SetPosition : MonoBehaviour {
         destination = position;
     }
 
-    //目的地を取得する
+    //目的地を取得する 外部からこの関数を呼べば、destinationを取得できる。
     public Vector3 GetDestination()
     {
         return destination;

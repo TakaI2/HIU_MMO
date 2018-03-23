@@ -6150,7 +6150,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 0}
   walkSpeed: 8
-  runSpeed: 10
+  runSpeed: 30
   distance: 3
   polarAngle: 45
   azimuthalAngle: -90

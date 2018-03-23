@@ -10,6 +10,11 @@ public class MoveEnemy : MonoBehaviour {
     private CharacterController enemyController;
     private Animator animator;
 
+    public GameObject cube1;
+    public GameObject cube2;
+    public GameObject cube3;
+
+
     //スタート地点
     private Vector3 startPosition;
     //目的地
@@ -119,18 +124,21 @@ public class MoveEnemy : MonoBehaviour {
     {
         if (mode == "walk")
         {
+            Instantiate(cube1, transform.position, Quaternion.identity);
             arrived = false;
             elapsedTime = 0f;
             state = EnemyState.Walk;
             setPosition.CreateRandomPosition();
 
         }else if(mode == "chase"){
+            Instantiate(cube2, transform.position, Quaternion.identity);
             state = EnemyState.Chase;
             arrived = false;
             //追いかける対象をセット
             playerTransform = obj;
         }else if(mode == "wait")
         {
+            Instantiate(cube3, transform.position, Quaternion.identity);
             elapsedTime = 0f;
             state = EnemyState.Wait;
             arrived = true;

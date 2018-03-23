@@ -3,373 +3,197 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace StateMachineSample
-{
+
+
+
+public class Enemy : MonoBehaviour {
+
+    private CharacterController enemyController;
+    private Animator animator;
+
+    public GameObject cube1;
+    public GameObject cube2;
+    public GameObject cube3;
+    public GameObject cube4;
+    public GameObject cube5;
+
+
+    //スタート地点
+    private Vector3 startPosition;
+    //目的地
+    private Vector3 destination;
+    //歩くスピード
+    [SerializeField]
+    private float walkSpeed = 1.0f;
+    //速度
+    private Vector3 velocity;
+    //移動方向
+    private Vector3 direction;
+    //到着フラグ
+    private bool arrived;
+    //SetPositionスクリプト
+    private SetPosition setPosition;
+    //待ち時間
+    [SerializeField]
+    private float waitTime = 5f;
+    //経過時間
+    private float elapsedTime;
+
+
+    //攻撃した後のフリーズ時間
+    [SerializeField]
+    private float freezeTime = 0.3f;
+
+
+    //敵の状態
+    public EnemyState state;
+    //追いかけるキャラクター
+    private Transform playerTransform;
+
+
     public enum EnemyState
     {
-        Wander,
-        Pursuit,
-        LongAttack,
-        ShortAttack,
-        //Explode,
+        Walk,
+        Wait,
+        Chase,
+        Attack,
+        Freeze
+    };
+
+
+    //Use this for initialization
+    // Use this for initialization
+    void Start()
+    {
+        enemyController = GetComponent<CharacterController>();
+        animator = GetComponent<Animator>();
+        setPosition = GetComponent<SetPosition>();
+        setPosition.CreateRandomPosition();
+        velocity = Vector3.zero;
+        arrived = false;
+        elapsedTime = 0f;
+        SetState("wait");
+
     }
 
-
-
-    public class Enemy : StatefulObjectBase<Enemy,EnemyState>
+    // Update is called once per frame
+    void Update()
     {
 
-        public GameObject blockPrefab1;
-        //public GameObject blockPrefab2;
-        //public Transform muzzle;
-        public float bulletpower;
+        if (state == EnemyState.Walk || state == EnemyState.Chase)
+        {
+            //キャラクターを追いかける状態であれば、キャラクターの目的地を再設定
+            if (state == EnemyState.Chase)
+            {
+                setPosition.SetDestination(playerTransform.position);
+            }
 
-        //public int maxLife;
+            if (enemyController.isGrounded)
+            {
+                velocity = Vector3.zero;
+                animator.SetFloat("Speed", 2.0f);
+                direction = (setPosition.GetDestination() - transform.position).normalized;
+                transform.LookAt(new Vector3(setPosition.GetDestination().x, transform.position.y, setPosition.GetDestination().z));
+                velocity = direction * walkSpeed;
 
-
-
-        private CharacterController cCon;
-
-
-        private int life;
-        private float RandomBiasX;
-        private float RandomBiasZ;
-
-        private Transform player;
-        private Animator animator;
-        public Transform head;
+            }
 
 
-
-        private Vector3 velocity;
-
-        public float speed;
-        public float rotationSmooth;
-        public float headRotationSmooth;
-
-        public float longattackInterval;
-        public float shortattackInterval;
-
-        public float attackSqrDistance1;  //遠距離攻撃に至る距離
-        public float pursuitSqrDistance; //追跡行動に至る距離
-        public float attackSqrDistance2;  //近距離攻撃に至る距離
-        public float margin;
-
-        public float changeTargetSqrDistance;
-
+            //目的地に到着したかどうかの判定
+            if (Vector3.Distance(transform.position, setPosition.GetDestination()) < 0.7f)
+            {
+                SetState("wait");
+                animator.SetFloat("Speed", 0.0f);
+            }      
+            else if (state == EnemyState.Chase)
+            {
+                //攻撃する距離だったら攻撃
+                if (Vector3.Distance(transform.position, setPosition.GetDestination()) < 2.0f)
+                {
+                    SetState("attack");
+                }
+            }
+        }
+        else if (state == EnemyState.Wait)  // 到着していたら一定時間待つ
+        {
         
+            elapsedTime += Time.deltaTime;
 
-        private void Start()
-        {
-            Initialize();
-        }
-
-        public void Initialize()
-        {
-
-            cCon = GetComponent<CharacterController>();
-            animator = GetComponent<Animator>();
-
-            RandomBiasX = transform.position.x;
-            RandomBiasZ = transform.position.z;
-
-            //player = GameObject.FindWithTag("Player").transform; 
-
-            //life = maxLife;
-
-            stateList.Add(new StateWander(this));
-            stateList.Add(new StatePursuit(this));
-            stateList.Add(new StateLongAttack(this));
-            stateList.Add(new StateShortAttack(this));
-            //stateList.Add(new StateExplode(this));
-
-            stateMachine = new StateMachine<Enemy>();
-
-            ChangeState(EnemyState.Wander);
-
-       
+            //　待ち時間を超えたら次の目的地を設定
+            if (elapsedTime > waitTime)
+            {
+                SetState("walk");
+            }
 
         }
-
-
-
-
-        #region States
-
-        ///state:  立ち尽くす
-
-        private class StateWander : State<Enemy>
+        else if(state == EnemyState.Wait)
         {
-            private Vector3 targetPosition;
-            private bool wallcorid = false;
+            elapsedTime += Time.deltaTime;
 
-            public StateWander(Enemy owner) : base(owner) { }
-
-            public override void Enter()
+            if(elapsedTime > freezeTime)
             {
-                // 初めの目標地点をランダムに指定。
-                //targetPosition = GetRandomPosition();
-
-                //owner.player = GameObject.FindWithTag("Player").transform;
-
-                /*
-                if (GameObject.FindWithTag("Player"))
-                {
-                    owner.player = GameObject.FindWithTag("Player").transform;
-                }
-                */
-
+                SetState("walk");
             }
-
-            public override void Execute()
-            {
-
-                if (GameObject.FindWithTag("Player"))
-                {
-                    owner.player = GameObject.FindWithTag("Player").transform;
-                }
-
-                // プレイヤーとの距離が第1攻撃距離より小さければ、遠距距離攻撃ステートに遷移
-                float sqrDistanceToPlayer = Vector3.SqrMagnitude(owner.transform.position - owner.player.position);
-                if (sqrDistanceToPlayer < owner.attackSqrDistance1 - owner.margin)
-                {
-                        owner.ChangeState(EnemyState.LongAttack);
-                }
-                
-
-
-                // 目標地点との距離が小さければ、次のランダムな目標地点を設定する
-                float sqrDistanceToTarget = Vector3.SqrMagnitude(owner.transform.position - targetPosition);
-                if ((sqrDistanceToTarget < owner.changeTargetSqrDistance) || wallcorid == true)
-                {
-                    wallcorid = false;
-
-                    //targetPosition = GetRandomPosition();
-                }
-
-                //目標地点の方向を向く
-
-                //Quaternion targetRotation = Quaternion.LookRotation(targetPosition - owner.transform.position);
-                //owner.transform.rotation = Quaternion.Slerp(owner.transform.rotation, targetRotation, Time.deltaTime * owner.rotationSmooth);
-
-
-
-
-                // 前方に進む
-                //owner.transform.Translate(Vector3.forward * owner.speed * Time.deltaTime);
-
-                //owner.cCon.Move(Vector3.forward * owner.speed * Time.deltaTime);
-
-                owner.animator.SetFloat("Speed", 0f);
-
-            }
-
-            public override void Exit()
-            {
-                //   Instantiate(owner.blockPrefab1, owner.transform.position, Quaternion.identity);
-                //owner.animator.SetFloat("Speed", 0f);
-            }
-
-
-            public Vector3 GetRandomPosition()
-            {
-                float x = Random.Range(owner.RandomBiasX - 10.0f, owner.RandomBiasX + 10.0f);
-                float z = Random.Range(owner.RandomBiasZ - 10.0f, owner.RandomBiasZ + 10.0f);
-                Debug.Log("X,Z: " + x.ToString("F2") + ", " + z.ToString("F2"));
-                return new Vector3(x, 0.0f, z);
-            }
-
-
-
         }
 
-
-        ///state:  追跡
-
-        private class StatePursuit : State<Enemy>
-        {
-            public StatePursuit(Enemy owner) : base(owner) { }
-
-            public override void Enter()
-            {
-
-            }
-
-            public override void Execute()
-            {
-                float sqrDistanceToPlayer = Vector3.SqrMagnitude(owner.transform.position - owner.player.position);
-
-                
-                // プレイヤーとの距離が第2攻撃距離より小さければ近距離攻撃ステートに遷移
-                if (sqrDistanceToPlayer < owner.attackSqrDistance2 - owner.margin)
-                {
-                    owner.ChangeState(EnemyState.ShortAttack);
-                }
-                
-
-                // プレイヤーとの距離が第２攻撃距離より大きければ、遠距離攻撃ステートに遷移
-                if (sqrDistanceToPlayer > owner.pursuitSqrDistance + owner.margin)
-                {
-                    owner.ChangeState(EnemyState.LongAttack);
-                }
-
-                // プレイヤーの方向を向く
-                Quaternion targetRotation = Quaternion.LookRotation(owner.player.position - owner.transform.position);
-                owner.transform.rotation = Quaternion.Slerp(owner.transform.rotation, targetRotation, Time.deltaTime * owner.rotationSmooth);
-
-                // 前方に進む
-                owner.transform.Translate(Vector3.forward * owner.speed * Time.deltaTime);
-                //owner.cCon.Move(Vector3.forward * owner.speed * Time.deltaTime);
-                owner.animator.SetFloat("Speed", 2.1f);
-
-
-            }
-
-            public override void Exit()
-            {
-                owner.animator.SetFloat("Speed", 0f);
-            }
-
-
-
-        }
-
-        /// <summary>
-        /// ステート: 遠距離攻撃
-        /// </summary>
-        private class StateLongAttack : State<Enemy>
-        {
-            private float lastAttackTime;
-
-            public StateLongAttack(Enemy owner) : base(owner) { }
-
-            public override void Enter()
-            {
-                //    Instantiate(owner.blockPrefab2, owner.muzzle.position, owner.muzzle.rotation);
-
-
-            }
-
-
-            public override void Execute()
-            {
-
-                owner.animator.SetFloat("Speed", 0f);
-
-                // プレイヤーとの距離が第一攻撃距離より大きければ、待機ステートに遷移
-                float sqrDistanceToPlayer = Vector3.SqrMagnitude(owner.transform.position - owner.player.position);
-                if ((sqrDistanceToPlayer > owner.attackSqrDistance1 + owner.margin) || (lastAttackTime >= 15))
-                {
-                    owner.player = null;
-                    owner.ChangeState(EnemyState.Wander);
-                }
-
-
-                // プレイヤーとの距離が追跡開始距離より小さければ、追跡ステートに遷移
-                if (sqrDistanceToPlayer < owner.pursuitSqrDistance - owner.margin)
-                {
-                    owner.ChangeState(EnemyState.Pursuit);
-                }
-
-
-                // プレイヤーとの距離が近くなれば、追跡ステートに遷移
-
-
-                // 身体をプレイヤーの向きに向ける、
-                Quaternion bodyRotation = Quaternion.LookRotation(owner.player.position - owner.transform.position);
-                owner.transform.rotation = Quaternion.Slerp(owner.transform.rotation, bodyRotation, Time.deltaTime * owner.rotationSmooth);
-
-                // 砲台をプレイヤーの方向に向ける
-                Quaternion targetRotation = Quaternion.LookRotation(owner.player.position - owner.head.position);
-
-                targetRotation.z = 0;
-                owner.head.rotation = Quaternion.Slerp(owner.head.rotation, targetRotation, Time.deltaTime * owner.headRotationSmooth);
-
-                // 一定間隔で弾丸を発射する
-                if (Time.time > lastAttackTime + owner.longattackInterval)
-                {
-                    //炸薬により実体弾を打ち出すタイプ。
-                    GameObject laserInstance = GameObject.Instantiate(owner.blockPrefab1, owner.head.position, owner.head.rotation);
-                    laserInstance.GetComponent<Rigidbody>().AddForce(laserInstance.transform.forward * owner.bulletpower);
-                    Destroy(laserInstance, 5);
-
-
-                    // Instantiate(owner.blockPrefab1, owner.muzzle.position, owner.muzzle.rotation);
-                    lastAttackTime = Time.time;
-
-                }
-            }
-
-            public override void Exit() { }
-        }
-
-
-
-
-        /// <summary>
-        /// ステート: 近距離攻撃
-        /// </summary>
-        private class StateShortAttack : State<Enemy>
-        {
-            private float lastAttackTime;
-
-            public StateShortAttack(Enemy owner) : base(owner) { }
-
-            public override void Enter()
-            {
-                //    Instantiate(owner.blockPrefab2, owner.muzzle.position, owner.muzzle.rotation);
-
-
-            }
-
-
-            public override void Execute()
-            {
-
-                owner.animator.SetFloat("Speed", 0f);
-
-                // プレイヤーとの距離が第2攻撃距離より大きければ、追跡ステートに遷移
-                float sqrDistanceToPlayer = Vector3.SqrMagnitude(owner.transform.position - owner.player.position);
-                if (sqrDistanceToPlayer > owner.attackSqrDistance2 + owner.margin)
-                {
-                    owner.ChangeState(EnemyState.Pursuit);
-                }
-
-
-                // プレイヤーとの距離が近くなれば、追跡ステートに遷移
-
-
-                // 身体をプレイヤーの向きに向ける、
-                Quaternion bodyRotation = Quaternion.LookRotation(owner.player.position - owner.transform.position);
-                owner.transform.rotation = Quaternion.Slerp(owner.transform.rotation, bodyRotation, Time.deltaTime * owner.rotationSmooth);
-
-                // 一定間隔で剣を振り下ろす。
-                if (Time.time > lastAttackTime + owner.shortattackInterval)
-                {
-                    owner.animator.SetBool("Attack", true);
-
-                    // Instantiate(owner.blockPrefab1, owner.muzzle.position, owner.muzzle.rotation);
-                    lastAttackTime = Time.time;
-                }
-                
-                
-            }
-
-            public override void Exit() { }
-        }
-
-
-
-
-        #endregion
-
-
+        velocity.y += Physics.gravity.y * Time.deltaTime;
+        enemyController.Move(velocity * Time.deltaTime);
 
 
     }
 
+    public void SetState(string mode, Transform obj = null)
+    {
+        if (mode == "walk")
+        {
+            //Instantiate(cube1, transform.position, Quaternion.identity);
+            arrived = false;
+            elapsedTime = 0f;
+            state = EnemyState.Walk;
+            setPosition.CreateRandomPosition();
 
+        }
+        else if (mode == "chase")
+        {
+            //Instantiate(cube2, transform.position, Quaternion.identity);
+            state = EnemyState.Chase;
+            arrived = false;
+            //追いかける対象をセット
+            playerTransform = obj;
+        }
+        else if (mode == "wait")
+        {
+            //Instantiate(cube3, transform.position, Quaternion.identity);
+            elapsedTime = 0f;
+            state = EnemyState.Wait;
+            arrived = true;
+            velocity = Vector3.zero;
+            animator.SetFloat("Speed", 0f);
+        }
+        else if(mode == "attack")
+        {
+            //Instantiate(cube4, transform.position, Quaternion.identity);
+            state = EnemyState.Attack;
+            velocity = Vector3.zero;
+            animator.SetFloat("Speed", 0f);
+            animator.SetBool("Attack", true);
+        }
+        else if(mode == "freeze")
+        {
+            Instantiate(cube5, transform.position, Quaternion.identity);
+            elapsedTime = 0f;
+            velocity = Vector3.zero;
+            state = EnemyState.Freeze;
+            animator.SetFloat("Speed", 0f);
+            animator.SetBool("Attack", false);
+        }
+
+
+    }
+
+    public EnemyState GetState()
+    {
+        return state;
+    }
 
 }
-
-
