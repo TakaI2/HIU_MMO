@@ -6151,6 +6151,7 @@ MonoBehaviour:
   target: {fileID: 0}
   walkSpeed: 8
   runSpeed: 30
+  jumpPower: 8
   distance: 3
   polarAngle: 45
   azimuthalAngle: -90
@@ -6166,7 +6167,7 @@ MonoBehaviour:
   centerOffset: {x: 0.5, y: 1.6, z: 0.5}
   cameraRotateLimit: 30
   cameraRotForward: 1
-  rotateSpeed: 10
+  rotateSpeed: 30
   mouseSpeed: 15
 --- !u!114 &114209289533921082
 MonoBehaviour:
@@ -6283,6 +6284,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c36716e153a032343a3bf5c7e5879b22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Arrive: 1
+  nameplate: {fileID: 0}
   _PlayerHealthSlider: {fileID: 114403664447526486}
   _Health: {fileID: 114010512029850076}
   hp: 100

@@ -5103,7 +5103,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bullet: {fileID: 1687432170507066, guid: d617fceb1abf42a49a6f8aca37a3bfa1, type: 2}
-  bulletpower: 2000
+  bulletpower: 500
   shotflag: 0
 --- !u!114 &114643961985678130
 MonoBehaviour:
@@ -5200,6 +5200,7 @@ MonoBehaviour:
   target: {fileID: 0}
   walkSpeed: 6
   runSpeed: 10
+  jumpPower: 5
   distance: 3
   polarAngle: 45
   azimuthalAngle: -90
@@ -5212,7 +5213,7 @@ MonoBehaviour:
   scrollSensitivity: 5
   height: 3
   heightSmoothLag: 0.3
-  centerOffset: {x: 0, y: 1.7, z: 0}
+  centerOffset: {x: 0, y: 2, z: 0}
   cameraRotateLimit: 30
   cameraRotForward: 1
   rotateSpeed: 10
@@ -5282,6 +5283,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c36716e153a032343a3bf5c7e5879b22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  Arrive: 1
+  nameplate: {fileID: 0}
   _PlayerHealthSlider: {fileID: 114338824901584998}
   _Health: {fileID: 114536474197379052}
   hp: 100

@@ -25,10 +25,11 @@ namespace Com.MyCompany.MyGame
         private int center;
         private float stair;
 
-        [SerializeField]
-        private float walkSpeed = 1.5f;
-        [SerializeField]
-        private float runSpeed = 2.5f;
+
+        //キャラ移動関係関数
+        [SerializeField]private float walkSpeed = 1.5f;
+        [SerializeField]private float runSpeed = 2.5f;
+        [SerializeField] private float jumpPower = 5f;
 
 
         //カメラ制御用変数
@@ -182,6 +183,14 @@ namespace Com.MyCompany.MyGame
                     animator.SetTrigger("Attack");
 
                 }
+
+                //ジャンプキーを押したらY方向へのジャンプ力を足す
+                if(Input.GetButtonDown("Jump") && !animator.GetCurrentAnimatorStateInfo(0).IsName("Jump"))
+                {
+                    animator.SetBool("Jump", true);
+                    velocity.y += jumpPower;
+                }
+
 
             }
 

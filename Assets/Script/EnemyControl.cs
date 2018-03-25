@@ -24,14 +24,10 @@ namespace StateMachineSample
 
         public Transform head;
 
-        //public int maxLife;
-
-
-
         private CharacterController cCon;
 
 
-        private int life;
+        public bool Arrive;
         private float RandomBiasX;
         private float RandomBiasZ;
 
@@ -63,6 +59,9 @@ namespace StateMachineSample
         public GameObject NearOne;
 
 
+        private Status sts;
+
+
         private void Start()
         {
             Initialize();
@@ -70,8 +69,8 @@ namespace StateMachineSample
 
         public void Initialize()
         {
-
-
+            Arrive = true;
+            sts = GetComponent<Status>();
             cCon = GetComponent<CharacterController>();
             animator = GetComponent<Animator>();
 
@@ -97,11 +96,15 @@ namespace StateMachineSample
         }
 
 
-
-
-        
         void LateUpdate()
         {
+            Arrive = sts.Arrive;
+
+            if(Arrive == false)
+            {
+                ChangeState(EnemyState.Explode);
+            }
+
             //Playerタグがついているオブジェクトを全て取得。
             targets = GameObject.FindGameObjectsWithTag("Player");
 
@@ -227,6 +230,8 @@ namespace StateMachineSample
 
         private class StatePursuit : State<EnemyControl>
         {
+            private float lastAttackTime;
+
             public StatePursuit(EnemyControl owner) : base(owner) { }
 
             public override void Enter()
@@ -256,11 +261,33 @@ namespace StateMachineSample
                 Quaternion targetRotation = Quaternion.LookRotation(owner.player.position - owner.transform.position);
                 owner.transform.rotation = Quaternion.Slerp(owner.transform.rotation, targetRotation, Time.deltaTime * owner.rotationSmooth);
 
+                // 砲台をプレイヤーの方向に向ける
+                Quaternion headRotation = Quaternion.LookRotation(owner.player.position - owner.head.position);
+
+
+                targetRotation.z = 0;
+                owner.head.rotation = Quaternion.Slerp(owner.head.rotation, headRotation, Time.deltaTime * owner.headRotationSmooth);
+
+                // 一定間隔で弾丸を発射する
+                if (Time.time > lastAttackTime + owner.longattackInterval)
+                {
+                    //炸薬により実体弾を打ち出すタイプ。
+                    GameObject laserInstance = GameObject.Instantiate(owner.blockPrefab1, owner.head.position, owner.head.rotation);
+                    laserInstance.GetComponent<Rigidbody>().AddForce(laserInstance.transform.forward * owner.bulletpower);
+                    Destroy(laserInstance, 5);
+
+
+                    // Instantiate(owner.blockPrefab1, owner.muzzle.position, owner.muzzle.rotation);
+                    lastAttackTime = Time.time;
+
+                }
+
+
+
                 // 前方に進む
                 owner.transform.Translate(Vector3.forward * owner.speed * Time.deltaTime);
                 //owner.cCon.Move(Vector3.forward * owner.speed * Time.deltaTime);
                 owner.animator.SetFloat("Speed", 2.1f);
-
 
             }
 
@@ -408,16 +435,11 @@ namespace StateMachineSample
 
             public override void Enter()
             {
-                // ランダムな吹き飛ぶ力を加える
-                Vector3 force = Vector3.up * 1000f + Random.insideUnitSphere * 300f;
-                owner.GetComponent<Rigidbody>().AddForce(force);
 
-                // ランダムに吹き飛ぶ回転力を加える
-                Vector3 torque = new Vector3(Random.Range(-10000f, 10000f), Random.Range(-10000f, 10000f), Random.Range(-10000f, 10000f));
-                owner.GetComponent<Rigidbody>().AddTorque(torque);
+                owner.animator.SetBool("Death", true);
 
                 // 1秒後に自身を消去する
-                Destroy(owner.gameObject, 1.0f);
+                //Destroy(owner.gameObject, 1.0f);
             }
 
             public override void Execute() { }

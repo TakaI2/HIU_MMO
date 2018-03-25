@@ -111,7 +111,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52f25646dd3ac934ab42901bf7c88b08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hitEffect: {fileID: 100012, guid: 00ba21ea0bf889d4eb2c93e35eda5f7e, type: 2}
+  hitEffect: {fileID: 135710, guid: b8753ba549a46459eba7e6f806add77a, type: 2}
   attackPower: 10
   target: Player
 --- !u!135 &135042461025186858

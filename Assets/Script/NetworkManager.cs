@@ -168,7 +168,6 @@ namespace Com.MyCompany.MyGame
 
 
             //GameObject player = PhotonNetwork.Instantiate("Yusha_rigify", Vector3.up, Quaternion.identity, 0);
-
             GameObject player = PhotonNetwork.Instantiate("Yusha_rigify", respawnpoint, Quaternion.identity, 0);
 
             player.GetPhotonView().RPC("SetName", PhotonTargets.AllBuffered, PhotonNetwork.player.NickName);
@@ -180,7 +179,8 @@ namespace Com.MyCompany.MyGame
             yield return new WaitForSeconds(time);
             // ネットワークごしにキャラをインスタンス化 ここで、キャラを選択する。
 
-            GameObject player = PhotonNetwork.Instantiate("Sample_chan_repair", Vector3.up, Quaternion.identity, 0);
+            //GameObject player = PhotonNetwork.Instantiate("Sample_chan_repair", Vector3.up, Quaternion.identity, 0);
+            GameObject player = PhotonNetwork.Instantiate("Sample_chan_repair", respawnpoint, Quaternion.identity, 0);
 
 
             player.GetPhotonView().RPC("SetName", PhotonTargets.AllBuffered, PhotonNetwork.player.NickName);
