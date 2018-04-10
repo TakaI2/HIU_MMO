@@ -20,7 +20,7 @@ public class SetPosition : MonoBehaviour {
     public void CreateRandomPosition()
     {
         //ランダムなVector2の値を得る
-        var randDestination = Random.insideUnitCircle * 8;
+        var randDestination = Random.insideUnitCircle * 2;
         //現在地にランダムな位置を足して目的地とする。
         SetDestination(startPosition + new Vector3(randDestination.x, 0, randDestination.y));
     }

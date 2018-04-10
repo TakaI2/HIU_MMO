@@ -21,7 +21,12 @@ namespace Com.MyCompany.MyGame
             {
                 m_photonView = col.gameObject.GetComponent<PhotonView>();
                 m_photonView.RPC("Damage", PhotonTargets.AllBuffered, (attackPower / playerCount));
+                col.gameObject.GetComponent<MoveEnemy>().Damage(attackPower);
 
+            }
+            else if(col.gameObject.tag == "Zako")
+            {
+                col.gameObject.GetComponent<MoveEnemy>().Damage(attackPower);
             }
 
             /*

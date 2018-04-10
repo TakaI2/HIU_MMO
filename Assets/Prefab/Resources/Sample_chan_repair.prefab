@@ -3015,7 +3015,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1135754849852716}
-  m_LocalRotation: {x: -0.52538735, y: 0.66620016, z: 0.25889078, w: -0.46165025}
+  m_LocalRotation: {x: -0.5253874, y: 0.6662002, z: 0.2588908, w: -0.4616503}
   m_LocalPosition: {x: -0.006867651, y: -0.000000009313226, z: -5.587935e-10}
   m_LocalScale: {x: 0.99999994, y: 0.9999999, z: 0.99999994}
   m_Children:
@@ -3402,7 +3402,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1145779131891360}
-  m_LocalRotation: {x: 0.1669134, y: -0.6257276, z: -0.16006967, w: 0.7449715}
+  m_LocalRotation: {x: 0.16691342, y: -0.62572765, z: -0.16006969, w: 0.7449716}
   m_LocalPosition: {x: -0.003969143, y: 0.0000000030733645, z: 1.862645e-10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -5103,7 +5103,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   bullet: {fileID: 1687432170507066, guid: d617fceb1abf42a49a6f8aca37a3bfa1, type: 2}
-  bulletpower: 500
+  bulletpower: 700
   shotflag: 0
 --- !u!114 &114643961985678130
 MonoBehaviour:
@@ -5207,7 +5207,7 @@ MonoBehaviour:
   minDistance: 1
   maxDistance: 7
   minPolarAngle: 5
-  maxPolarAngle: 125
+  maxPolarAngle: 100
   mouseXSensitivity: 5
   mouseYSensitivity: 5
   scrollSensitivity: 5

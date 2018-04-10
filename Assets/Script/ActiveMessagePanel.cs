@@ -23,9 +23,14 @@ namespace Com.MyCompany.MyGame
         private string message3 = "この先の峠道には注意して。旅人や馬車はここで襲われるらしいの。\n"
                                  + "たぶん、この上に怪物の根城があるんだと思う。";
 
+
         private string message4 = "怪物の仕業ね。これじゃあ、通れないわ・・・。\n"
                                 + "素通りして逃げるってわけにはいかないわけね。";
 
+        private string message5 = "ここが、山の遺跡。 中はゴーレムがウヨウヨしてるから気を付けて。";
+
+        private string message6 = "イーストアイルではゴーレムは動けないって話、信じてたの？　\n"
+                                + "見ての通り、遺跡の中までは聖女様の加護も届かないみたいね。";
 
         void Start()
         {

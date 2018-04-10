@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
 
+
 namespace StateMachineSample
 {
     public enum EnemyState
@@ -26,7 +27,7 @@ namespace StateMachineSample
 
         private CharacterController cCon;
 
-
+        public bool Zakoflag;
         public bool Arrive;
         private float RandomBiasX;
         private float RandomBiasZ;
@@ -147,8 +148,13 @@ namespace StateMachineSample
 
             public override void Enter()
             {
-                // 初めの目標地点をランダムに指定。
-                //targetPosition = GetRandomPosition();
+                /*
+                if(owner.Zakoflag == true)
+                {
+                    // 初めの目標地点をランダムに指定。
+                    targetPosition = GetRandomPosition();
+                }*/
+
 
                 //owner.player = GameObject.FindWithTag("Player").transform;
 
@@ -163,12 +169,6 @@ namespace StateMachineSample
 
             public override void Execute()
             {
-                /*
-                if (GameObject.FindWithTag("Player"))
-                {
-                    owner.player = GameObject.FindWithTag("Player").transform;
-                }
-                */
 
 
                 // プレイヤーとの距離が第1攻撃距離より小さければ、遠距距離攻撃ステートに遷移
@@ -185,15 +185,21 @@ namespace StateMachineSample
                 if ((sqrDistanceToTarget < owner.changeTargetSqrDistance) || wallcorid == true)
                 {
                     wallcorid = false;
+                    /*
+                    if(owner.Zakoflag == true)
+                    {
+                        targetPosition = GetRandomPosition();
+                    }
+                    */
 
-                    //targetPosition = GetRandomPosition();
                 }
 
                 //目標地点の方向を向く
 
-                //Quaternion targetRotation = Quaternion.LookRotation(targetPosition - owner.transform.position);
-                //owner.transform.rotation = Quaternion.Slerp(owner.transform.rotation, targetRotation, Time.deltaTime * owner.rotationSmooth);
-
+                /*
+                Quaternion targetRotation = Quaternion.LookRotation(targetPosition - owner.transform.position);
+                owner.transform.rotation = Quaternion.Slerp(owner.transform.rotation, targetRotation, Time.deltaTime * owner.rotationSmooth);
+                */
 
 
 
@@ -439,12 +445,15 @@ namespace StateMachineSample
                 owner.animator.SetBool("Death", true);
 
                 // 1秒後に自身を消去する
-                //Destroy(owner.gameObject, 1.0f);
+                //Destroy(owner.gameObject, 5.0f);
+
             }
 
             public override void Execute() { }
 
             public override void Exit() { }
+
+
         }
 
 

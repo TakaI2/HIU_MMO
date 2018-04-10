@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 namespace StateMachineSample
 {
@@ -43,17 +44,17 @@ namespace StateMachineSample
             _Health.text = hp.ToString("F2");
 
             if (this.hp <= 0)
-            {
-                Dead();
+            {               
+                Arrive = false;
             }
         }
 
-        void Dead()
+        void DeadEnd()
         {
             Debug.Log("敵を倒した");
 
             //ここに、死亡モーションの命令を入れる。
-            Arrive = false;
+            SceneManager.LoadScene("ED");
 
             //Destroy(gameObject);
         }

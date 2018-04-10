@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 namespace Com.MyCompany.MyGame
 {
@@ -31,8 +32,6 @@ namespace Com.MyCompany.MyGame
             //ゲームのバージョン設定
             PhotonNetwork.ConnectUsingSettings("0.1");
 
-
-            //respawnpoint = GameObject.FindWithTag("Respawn").transform.position;
         }
 
 
@@ -46,6 +45,13 @@ namespace Com.MyCompany.MyGame
 
         }
 
+        /*
+        //ボタンを押したらロビーに入る
+        public void JoinLobby()
+        {
+            PhotonNetwork.JoinLobby();
+        }
+        */
 
         //マスターサーバに接続されたときに呼ばれる。
         void OnConnectedToMaster()
@@ -53,12 +59,14 @@ namespace Com.MyCompany.MyGame
             Debug.Log("マスターサーバに接続");
         }
 
+        
         //ロビーに入った時に呼ばれる。
         void OnJoinedLobby()
         {
             Debug.Log("ロビーに入る");
             loginUI.SetActive(true);
         }
+        
 
         //ログインボタンを押したときに実行するメソッド
         public void LoginGame()
@@ -204,6 +212,7 @@ namespace Com.MyCompany.MyGame
         }
 
 
+
         //LogoutButtonを押したときの処理
         public void LogoutGame()
         {
@@ -215,6 +224,7 @@ namespace Com.MyCompany.MyGame
         {
             Debug.Log("退室");
             logoutUI.SetActive(false);
+
         }
 
 

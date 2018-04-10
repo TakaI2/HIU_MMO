@@ -9,11 +9,6 @@ using UnityEngine;
     {
 
 
-
-
-    public bool sign = false;
-    public Transform targetpos;
-
         void OnTriggerStay(Collider col)
         {
 
@@ -24,16 +19,15 @@ using UnityEngine;
                 
 
                 //敵キャラの状態を取得
-                Enemy.EnemyState state = GetComponentInParent<Enemy>().GetState();
+                MoveEnemy.EnemyState state = GetComponentInParent<MoveEnemy>().GetState();
 
                 //敵キャラが追いかける状態でなければ追いかける設定に変更
 
                 
-                if (state != Enemy.EnemyState.Chase)
+                if (state != MoveEnemy.EnemyState.Chase)
                 {
                     Debug.Log("プレイヤー発見");
-                    GetComponentInParent<Enemy>().SetState("chase", col.transform);
-
+                    GetComponentInParent<MoveEnemy>().SetState("chase", col.transform);
 
 
                 }
@@ -48,16 +42,10 @@ using UnityEngine;
             {
                 
                 Debug.Log("見失う");
-                GetComponentInParent<Enemy>().SetState("wait");
+                GetComponentInParent<MoveEnemy>().SetState("wait");
                 
 
             }
-        }
-
-
-        public Transform GetPlayerTransform()
-        {
-            return targetpos;
         }
 
 

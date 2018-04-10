@@ -6158,7 +6158,7 @@ MonoBehaviour:
   minDistance: 1
   maxDistance: 7
   minPolarAngle: 5
-  maxPolarAngle: 125
+  maxPolarAngle: 100
   mouseXSensitivity: 5
   mouseYSensitivity: 5
   scrollSensitivity: 5

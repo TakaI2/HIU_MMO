@@ -10,10 +10,17 @@ public class MoveEnemy : MonoBehaviour {
     private CharacterController enemyController;
     private Animator animator;
 
-    public GameObject cube1;
-    public GameObject cube2;
-    public GameObject cube3;
+    public GameObject blockPrefab1;
+    //public GameObject cube2;
+    //public GameObject cube3;
 
+
+    public float life;
+    public Transform head; //砲台の位置パラメータ
+    public float headRotationSmooth;
+    public float bulletpower;
+    public float longattackInterval;
+    private float lastAttackTime; //レーザーの発射間隔
 
     //スタート地点
     private Vector3 startPosition;
@@ -48,7 +55,8 @@ public class MoveEnemy : MonoBehaviour {
     {
         Walk,
         Wait,
-        Chase
+        Chase,
+        Death
     };
     
 
@@ -65,9 +73,25 @@ public class MoveEnemy : MonoBehaviour {
         SetState("wait");
 
 	}
-	
-	// Update is called once per frame
-	void Update () {
+
+
+    public void Damage(int damage)
+    {
+
+        this.life -= damage;
+
+        //_PlayerHealthSlider.value = hp;
+        //_Health.text = hp.ToString("F2");
+
+        if (this.life <= 0)
+        {
+            SetState("Death");
+        }
+    }
+
+
+    // Update is called once per frame
+    void Update () {
 
         if(state == EnemyState.Walk || state == EnemyState.Chase)
         {
@@ -75,6 +99,27 @@ public class MoveEnemy : MonoBehaviour {
             if(state == EnemyState.Chase)
             {
                 setPosition.SetDestination(playerTransform.position);
+
+                // 砲台をプレイヤーの方向に向ける
+                Quaternion headRotation = Quaternion.LookRotation(playerTransform.position - head.position);
+
+                head.rotation = Quaternion.Slerp(head.rotation, headRotation, Time.deltaTime * headRotationSmooth);
+
+
+                // 一定間隔で弾丸を発射する
+
+
+                if (Time.time > lastAttackTime + longattackInterval)
+                {
+                    //炸薬により実体弾を打ち出すタイプ。
+                    GameObject laserInstance = GameObject.Instantiate(blockPrefab1, head.position, head.rotation);
+                    laserInstance.GetComponent<Rigidbody>().AddForce(laserInstance.transform.forward * bulletpower);
+                    Destroy(laserInstance, 5);
+
+                    lastAttackTime = Time.time;
+
+                }
+
             }
 
             if (enemyController.isGrounded)
@@ -122,28 +167,42 @@ public class MoveEnemy : MonoBehaviour {
 
     public void SetState(string mode, Transform obj = null)
     {
+
+
         if (mode == "walk")
         {
-            Instantiate(cube1, transform.position, Quaternion.identity);
+            //Instantiate(cube1, transform.position, Quaternion.identity);
             arrived = false;
             elapsedTime = 0f;
             state = EnemyState.Walk;
             setPosition.CreateRandomPosition();
 
         }else if(mode == "chase"){
-            Instantiate(cube2, transform.position, Quaternion.identity);
+            //Instantiate(cube2, transform.position, Quaternion.identity);
+
             state = EnemyState.Chase;
             arrived = false;
             //追いかける対象をセット
             playerTransform = obj;
-        }else if(mode == "wait")
+    
+
+
+        }
+        else if(mode == "wait")
         {
-            Instantiate(cube3, transform.position, Quaternion.identity);
+            //Instantiate(cube3, transform.position, Quaternion.identity);
             elapsedTime = 0f;
             state = EnemyState.Wait;
             arrived = true;
             velocity = Vector3.zero;
             animator.SetFloat("Speed", 0f);
+        }
+        else if(mode == "death")
+        {
+            state = EnemyState.Death;
+            velocity = Vector3.zero;
+            animator.SetBool("Death", true);
+            
         }
         
     }
