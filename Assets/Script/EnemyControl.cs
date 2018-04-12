@@ -19,7 +19,7 @@ namespace StateMachineSample
     {
 
         public GameObject blockPrefab1;
-        //public GameObject blockPrefab2;
+        public GameObject beam;
         //public Transform muzzle;
         public float bulletpower;
 
@@ -28,7 +28,8 @@ namespace StateMachineSample
         private CharacterController cCon;
 
         public bool Zakoflag;
-        public bool Arrive;
+        public bool Arrive; //Status()からArriveの値を受け取る
+        public bool Dying; //Status()からDyingの値を受け取る.
         private float RandomBiasX;
         private float RandomBiasZ;
 
@@ -101,10 +102,14 @@ namespace StateMachineSample
         {
             Arrive = sts.Arrive;
 
+            Dying = sts.Dying;
+
             if(Arrive == false)
             {
                 ChangeState(EnemyState.Explode);
             }
+
+            //beam.SetActive(true);
 
             //Playerタグがついているオブジェクトを全て取得。
             targets = GameObject.FindGameObjectsWithTag("Player");
@@ -169,7 +174,7 @@ namespace StateMachineSample
 
             public override void Execute()
             {
-
+                owner.beam.SetActive(false);
 
                 // プレイヤーとの距離が第1攻撃距離より小さければ、遠距距離攻撃ステートに遷移
                 float sqrDistanceToPlayer = Vector3.SqrMagnitude(owner.transform.position - owner.player.position);
@@ -242,14 +247,14 @@ namespace StateMachineSample
 
             public override void Enter()
             {
-
+                
             }
 
             public override void Execute()
             {
                 float sqrDistanceToPlayer = Vector3.SqrMagnitude(owner.transform.position - owner.player.position);
 
-
+                
                 // プレイヤーとの距離が第2攻撃距離より小さければ近距離攻撃ステートに遷移
                 if (sqrDistanceToPlayer < owner.attackSqrDistance2 - owner.margin)
                 {
@@ -261,6 +266,7 @@ namespace StateMachineSample
                 if (sqrDistanceToPlayer > owner.pursuitSqrDistance + owner.margin)
                 {
                     owner.ChangeState(EnemyState.LongAttack);
+
                 }
 
                 // プレイヤーの方向を向く
@@ -274,6 +280,7 @@ namespace StateMachineSample
                 targetRotation.z = 0;
                 owner.head.rotation = Quaternion.Slerp(owner.head.rotation, headRotation, Time.deltaTime * owner.headRotationSmooth);
 
+                
                 // 一定間隔で弾丸を発射する
                 if (Time.time > lastAttackTime + owner.longattackInterval)
                 {
@@ -288,6 +295,10 @@ namespace StateMachineSample
 
                 }
 
+                if(owner.Dying )
+                {
+                    owner.beam.SetActive(true);
+                }
 
 
                 // 前方に進む
@@ -300,6 +311,7 @@ namespace StateMachineSample
             public override void Exit()
             {
                 owner.animator.SetFloat("Speed", 0f);
+                
             }
 
 
@@ -351,6 +363,9 @@ namespace StateMachineSample
                 Quaternion bodyRotation = Quaternion.LookRotation(owner.player.position - owner.transform.position);
                 owner.transform.rotation = Quaternion.Slerp(owner.transform.rotation, bodyRotation, Time.deltaTime * owner.rotationSmooth);
 
+
+
+                
                 // 砲台をプレイヤーの方向に向ける
                 Quaternion targetRotation = Quaternion.LookRotation(owner.player.position - owner.head.position);
 
@@ -370,6 +385,10 @@ namespace StateMachineSample
                     lastAttackTime = Time.time;
 
                 }
+
+               
+
+
             }
 
             public override void Exit() { }
@@ -397,6 +416,7 @@ namespace StateMachineSample
 
             public override void Execute()
             {
+                owner.beam.SetActive(false);
 
                 owner.animator.SetFloat("Speed", 0f);
 

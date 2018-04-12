@@ -16,6 +16,8 @@ namespace Com.MyCompany.MyGame
         Animator animator;
         float speed;
         bool attack;
+        bool jump;
+        bool death;
 
         //武器を取得
         //GameObject refObj;
@@ -68,7 +70,7 @@ namespace Com.MyCompany.MyGame
                 // 初期値を設定
                 position = transform.position;
                 rotation = transform.rotation;
-                //hp = GetComponent<Status>().hp;
+                hp = GetComponent<Status>().hp;
 
 
                 speed = animator.GetFloat("Speed");
@@ -93,6 +95,9 @@ namespace Com.MyCompany.MyGame
                 transform.rotation = Quaternion.Lerp(transform.rotation, rotation, Time.deltaTime * smooth);
                 animator.SetFloat("Speed", speed);
                 animator.SetBool("Attack", attack);
+                animator.SetBool("Jump", jump);
+                animator.SetBool("Death", death);
+
 
                 yield return null;
             }
@@ -110,9 +115,11 @@ namespace Com.MyCompany.MyGame
                 position = (Vector3)stream.ReceiveNext();
                 rotation = (Quaternion)stream.ReceiveNext();
                 //CastTrigger = (bool)stream.ReceiveNext();
-                //hp = (float)stream.ReceiveNext();
+                hp = (float)stream.ReceiveNext();
                 speed = (float)stream.ReceiveNext();
                 attack = (bool)stream.ReceiveNext();
+                jump = (bool)stream.ReceiveNext();
+                death = (bool)stream.ReceiveNext();
             }
             else
             {
@@ -120,9 +127,11 @@ namespace Com.MyCompany.MyGame
                 stream.SendNext(transform.position);
                 stream.SendNext(transform.rotation);
                 //stream.SendNext(CastTrigger);
-                //stream.SendNext(hp);
+                stream.SendNext(hp);
                 stream.SendNext(animator.GetFloat("Speed"));
                 stream.SendNext(animator.GetBool("Attack"));
+                stream.SendNext(animator.GetBool("Jump"));
+                stream.SendNext(animator.GetBool("Death"));
             }
         }
         //Update is called once per frame

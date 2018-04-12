@@ -11,7 +11,7 @@ public class MoveEnemy : MonoBehaviour {
     private Animator animator;
 
     public GameObject blockPrefab1;
-    //public GameObject cube2;
+    public GameObject cube2;
     //public GameObject cube3;
 
 
@@ -68,7 +68,7 @@ public class MoveEnemy : MonoBehaviour {
         setPosition = GetComponent<SetPosition>();
         setPosition.CreateRandomPosition();
         velocity = Vector3.zero;
-        arrived = false;
+        arrived = true; //生きているか？
         elapsedTime = 0f;
         SetState("wait");
 
@@ -85,7 +85,8 @@ public class MoveEnemy : MonoBehaviour {
 
         if (this.life <= 0)
         {
-            SetState("Death");
+            arrived = false;
+            SetState("death");
         }
     }
 
@@ -96,7 +97,7 @@ public class MoveEnemy : MonoBehaviour {
         if(state == EnemyState.Walk || state == EnemyState.Chase)
         {
             //キャラクターを追いかける状態であれば、キャラクターの目的地を再設定
-            if(state == EnemyState.Chase)
+            if(state == EnemyState.Chase && arrived)
             {
                 setPosition.SetDestination(playerTransform.position);
 
@@ -135,7 +136,7 @@ public class MoveEnemy : MonoBehaviour {
             //enemyController.Move(velocity * Time.deltaTime);
 
             //目的地に到着したかどうかの判定
-            if(Vector3.Distance(transform.position, setPosition.GetDestination()) < 0.7f)
+            if(Vector3.Distance(transform.position, setPosition.GetDestination()) < 3f)
             {
                 SetState("wait");
                 animator.SetFloat("Speed", 0.0f);
@@ -152,7 +153,6 @@ public class MoveEnemy : MonoBehaviour {
             {
                 //setPosition.CreateRandomPosition();
                 //destination = setPosition.GetDestination();
-                //arrived = false;
                 //elapsedTime = 0f;
                 SetState("walk");
             }
@@ -172,7 +172,6 @@ public class MoveEnemy : MonoBehaviour {
         if (mode == "walk")
         {
             //Instantiate(cube1, transform.position, Quaternion.identity);
-            arrived = false;
             elapsedTime = 0f;
             state = EnemyState.Walk;
             setPosition.CreateRandomPosition();
@@ -181,7 +180,6 @@ public class MoveEnemy : MonoBehaviour {
             //Instantiate(cube2, transform.position, Quaternion.identity);
 
             state = EnemyState.Chase;
-            arrived = false;
             //追いかける対象をセット
             playerTransform = obj;
     
@@ -190,19 +188,21 @@ public class MoveEnemy : MonoBehaviour {
         }
         else if(mode == "wait")
         {
-            //Instantiate(cube3, transform.position, Quaternion.identity);
             elapsedTime = 0f;
             state = EnemyState.Wait;
-            arrived = true;
             velocity = Vector3.zero;
             animator.SetFloat("Speed", 0f);
         }
         else if(mode == "death")
         {
+
             state = EnemyState.Death;
             velocity = Vector3.zero;
+            animator.SetFloat("Speed", 0f);
             animator.SetBool("Death", true);
-            
+
+            Destroy(gameObject, 12.0f);
+
         }
         
     }

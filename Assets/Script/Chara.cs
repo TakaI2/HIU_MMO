@@ -10,11 +10,10 @@ namespace Com.MyCompany.MyGame
 
         public GameObject target;
 
-       // public Slider _PlayerHealthSlider;
-       // public float hp = 30;        //体力 
 
+        public bool Arrive;
 
-
+        private Status sts;
         private Animator animator;
         private CharacterController cCon;
         private float x;
@@ -98,6 +97,8 @@ namespace Com.MyCompany.MyGame
         // Use this for initialization
         void Start()
         {
+            Arrive = true;
+            sts = GetComponent<Status>();
             animator = GetComponent<Animator>();
             cCon = GetComponent<CharacterController>();
             myCamera = Camera.main.transform;//GetComponentInChildren<Camera>().transform; //Camera.main.transform//ここでmainのカメラを取得するようにしたらうまくいくのでは？
@@ -114,100 +115,108 @@ namespace Com.MyCompany.MyGame
         void Update()
         {
 
-            RotateChara2();
+            Arrive = sts.Arrive;
+            animator.SetBool("Death", false);
+
             //RotateCamera();
 
-
-            //　地面に接地してる時は初期化
-            if (cCon.isGrounded)
+            if (Arrive == true)
             {
-                velocity = Vector3.zero;
 
-                velocity = (transform.forward * Input.GetAxis("Vertical") + transform.right * Input.GetAxis("Horizontal")).normalized;
-                //velocity = (transform.forward * Input.GetAxis("Vertical"));
-
-                //float rotation = Input.GetAxis("Horizontal");
-
-                //var rotVec = Quaternion.Euler(0f, rotation, 0f);
-
-               // velocity = rotVec * velocity;
-
-                //走るか歩くかでスピードを変える。
-                float speed = 0f;
-
-                if(velocity != Vector3.zero)
+                //　地面に接地してる時は初期化
+                if (cCon.isGrounded)
                 {
-                    moveFlag = true;
-                }
-                else
-                {
-                    moveFlag = false;
-                }
+                    velocity = Vector3.zero;
 
+                    velocity = (transform.forward * Input.GetAxis("Vertical") + transform.right * Input.GetAxis("Horizontal")).normalized;
+                    //velocity = (transform.forward * Input.GetAxis("Vertical"));
 
-                if (Input.GetButton("Run"))
-                {
-                    runFlag = true;
-                    speed = runSpeed;
+                    //float rotation = Input.GetAxis("Horizontal");
 
-                }
-                else
-                {
-                    runFlag = false;
-                    speed = walkSpeed;
-                }
-                velocity *= speed;
+                    //var rotVec = Quaternion.Euler(0f, rotation, 0f);
 
-                if (velocity.magnitude > 0f || charaRotFlag)
-                {
-                    if (runFlag && !charaRotFlag)
+                   // velocity = rotVec * velocity;
+
+                    //走るか歩くかでスピードを変える。
+                    float speed = 0f;
+
+                    if(velocity != Vector3.zero)
                     {
-                        animator.SetFloat("Speed", 2.1f);
+                        moveFlag = true;
                     }
                     else
                     {
-                        animator.SetFloat("Speed", 1f);
+                        moveFlag = false;
                     }
 
+
+                    if (Input.GetButton("Run"))
+                    {
+                        runFlag = true;
+                        speed = runSpeed;
+
+                    }
+                    else
+                    {
+                        runFlag = false;
+                        speed = walkSpeed;
+                    }
+                    velocity *= speed;
+
+                    if (velocity.magnitude > 0f || charaRotFlag)
+                    {
+                        if (runFlag && !charaRotFlag)
+                        {
+                            animator.SetFloat("Speed", 2.1f);
+                        }
+                        else
+                        {
+                            animator.SetFloat("Speed", 1f);
+                        }
+
+                    }
+                    else
+                    {
+                        animator.SetFloat("Speed", 0f);
+                    }
+
+                    if (Input.GetButtonDown("Fire1")
+                        && !animator.GetCurrentAnimatorStateInfo(0).IsName("Attack")
+                        && !animator.IsInTransition(0)
+                    )
+                    {
+                        animator.SetTrigger("Attack");
+
+                    }
+
+                    //ジャンプキーを押したらY方向へのジャンプ力を足す
+                    if(Input.GetButtonDown("Jump") && !animator.GetCurrentAnimatorStateInfo(0).IsName("Jump"))
+                    {
+                        animator.SetBool("Jump", true);
+                        velocity.y += jumpPower;
+                    }
+
+
                 }
-                else
-                {
-                    animator.SetFloat("Speed", 0f);
-                }
-
-                if (Input.GetButtonDown("Fire1")
-                    && !animator.GetCurrentAnimatorStateInfo(0).IsName("Attack")
-                    && !animator.IsInTransition(0)
-                )
-                {
-                    animator.SetTrigger("Attack");
-
-                }
-
-                //ジャンプキーを押したらY方向へのジャンプ力を足す
-                if(Input.GetButtonDown("Jump") && !animator.GetCurrentAnimatorStateInfo(0).IsName("Jump"))
-                {
-                    animator.SetBool("Jump", true);
-                    velocity.y += jumpPower;
-                }
-
-
+      
+                    
+                    RotateChara2();
+                    velocity.y += Physics.gravity.y * Time.deltaTime;
+                    cCon.Move(velocity * Time.deltaTime);
+            }
+            else
+            {
+                animator.SetBool("Death", true);
             }
 
-      
-
-
-            velocity.y += Physics.gravity.y * Time.deltaTime;
-            cCon.Move(velocity * Time.deltaTime);
 
         }
 
 
         void LateUpdate()
-        {
+        { 
 
-           
-            if(moveFlag)
+            if (moveFlag)
             {
                 stair = (Input.mousePosition.x - center) / center * Time.deltaTime * rotateSpeed;
             }

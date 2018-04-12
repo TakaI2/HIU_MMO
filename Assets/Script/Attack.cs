@@ -6,16 +6,21 @@ namespace Com.MyCompany.MyGame
 {
     public class Attack : MonoBehaviour
     {
-
+        public GameObject hitEffect;
         public int attackPower; //攻撃力
 
         private PhotonView m_photonView = null;
 
         private int playerCount;
 
-        void OnTriggerEnter(Collider col)
+        void OnTriggerEnter(Collider col) //OnTriggerEnter(Collider col)とどっちがいい?
         {
             playerCount = PhotonNetwork.room.PlayerCount;
+            
+ 
+            GameObject effect = Instantiate(hitEffect) as GameObject;
+            effect.transform.position = transform.position;
+            
 
             if (col.gameObject.tag == "Enemy")
             {

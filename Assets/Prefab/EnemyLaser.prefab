@@ -139,3 +139,5 @@ MonoBehaviour:
   hitEffect: {fileID: 135710, guid: b8753ba549a46459eba7e6f806add77a, type: 2}
   attackPower: 3
   target: Player
+  EnemyShot: 1
+  PlayerShot: 0

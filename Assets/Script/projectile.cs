@@ -11,6 +11,9 @@ namespace Com.MyCompany.MyGame
         public int attackPower;
         public string target;
 
+        public bool EnemyShot;
+        public bool PlayerShot;
+
         private PhotonView m_photonView = null;
         private int playerCount;
 
@@ -26,30 +29,42 @@ namespace Com.MyCompany.MyGame
 
             }
 
-
-            if (col.gameObject.tag == target)
+            if(PlayerShot == true && EnemyShot == false)
             {
-                //Destroy(col.collider.gameObject);
-                if (target == "Player")
+                if (col.gameObject.tag == "Player")
                 {
+
                     m_photonView = col.gameObject.GetComponent<PhotonView>();
-                    m_photonView.RPC("Damage", PhotonTargets.AllBuffered, attackPower/playerCount);
+                    m_photonView.RPC("Cure", PhotonTargets.All, 100 / playerCount);
                     //col.gameObject.GetComponent<Status>().Damage(power);
                 }
-                else if(target == "Enemy")
+                else if (col.gameObject.tag == "Enemy")
                 {
-                   // col.gameObject.GetComponent<EnemyBoss>().Damage(attackPower);
+                    // col.gameObject.GetComponent<EnemyBoss>().Damage(attackPower);
                     m_photonView = col.gameObject.GetComponent<PhotonView>();
-                    m_photonView.RPC("Damage", PhotonTargets.AllBuffered, attackPower / playerCount);
+                    m_photonView.RPC("Damage", PhotonTargets.All, attackPower / playerCount);
+                }
+                else if (col.gameObject.tag == "Zako")
+                {
+                    col.gameObject.GetComponent<MoveEnemy>().Damage(attackPower);
+
                 }
 
-
-                Destroy(gameObject);
-
+            }
+            else if (PlayerShot == false && EnemyShot == true)
+            {
+                if (col.gameObject.tag == "Player")
+                {
+                    m_photonView = col.gameObject.GetComponent<PhotonView>();
+                    m_photonView.RPC("Damage", PhotonTargets.All, attackPower / playerCount);
+                    //col.gameObject.GetComponent<Status>().Damage(power);
+                }
             }
 
 
-            Destroy(gameObject);
+
+
+                Destroy(gameObject);
 
         }
 

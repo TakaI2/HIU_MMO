@@ -197,6 +197,8 @@ MonoBehaviour:
   hitEffect: {fileID: 135710, guid: b8753ba549a46459eba7e6f806add77a, type: 2}
   attackPower: 10
   target: Enemy
+  EnemyShot: 0
+  PlayerShot: 1
 --- !u!135 &135310395031002936
 SphereCollider:
   m_ObjectHideFlags: 1

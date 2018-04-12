@@ -721,6 +721,8 @@ GameObject:
   - component: {fileID: 114758117197800652}
   - component: {fileID: 136883395435240246}
   - component: {fileID: 114933198780391260}
+  - component: {fileID: 114176361885982760}
+  - component: {fileID: 82527547920583728}
   m_Layer: 0
   m_Name: Sample_chan_repair
   m_TagString: Player
@@ -1798,6 +1800,8 @@ GameObject:
   - component: {fileID: 4658172714200808}
   - component: {fileID: 33462317517536906}
   - component: {fileID: 23440846559106104}
+  - component: {fileID: 135776824721904080}
+  - component: {fileID: 114438282911969970}
   m_Layer: 0
   m_Name: Sample_chan_lod
   m_TagString: Untagged
@@ -4940,6 +4944,86 @@ MeshFilter:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1769956332138034}
   m_Mesh: {fileID: 4300000, guid: 6f41e5f6da8d133478c23e99dd6a037c, type: 3}
+--- !u!82 &82527547920583728
+AudioSource:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1287147268829074}
+  m_Enabled: 1
+  serializedVersion: 4
+  OutputAudioMixerGroup: {fileID: 0}
+  m_audioClip: {fileID: 0}
+  m_PlayOnAwake: 1
+  m_Volume: 1
+  m_Pitch: 1
+  Loop: 0
+  Mute: 0
+  Spatialize: 0
+  SpatializePostEffects: 0
+  Priority: 128
+  DopplerLevel: 1
+  MinDistance: 1
+  MaxDistance: 500
+  Pan2D: 0
+  rolloffMode: 0
+  BypassEffects: 0
+  BypassListenerEffects: 0
+  BypassReverbZones: 0
+  rolloffCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    - serializedVersion: 2
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  panLevelCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
+  spreadCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  reverbZoneMixCustomCurve:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 2
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 0
 --- !u!95 &95437491328477384
 Animator:
   serializedVersion: 3
@@ -4983,6 +5067,22 @@ MonoBehaviour:
   instantiationId: -1
   currentMasterID: -1
   isRuntimeInstantiated: 0
+--- !u!114 &114176361885982760
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1287147268829074}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 88059a9091a09b141bc7124934672697, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioSource: {fileID: 82527547920583728}
+  se:
+  - {fileID: 8300000, guid: c270df24279771e41b6853b5112341d3, type: 3}
+  col1: {fileID: 135776824721904080}
+  col2: {fileID: 0}
 --- !u!114 &114338824901584998
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5031,6 +5131,19 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.UI.Slider+SliderEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null
+--- !u!114 &114438282911969970
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1769956332138034}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f753275db5467e542b9061fa2199d447, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitEffect: {fileID: 0}
+  attackPower: 5
 --- !u!114 &114507157264341092
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5198,6 +5311,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 0}
+  Arrive: 0
   walkSpeed: 6
   runSpeed: 10
   jumpPower: 5
@@ -5284,10 +5398,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Arrive: 1
+  cureEffect: {fileID: 1304730709054948, guid: ec069d111c863a74089a5c84c6eb385d, type: 2}
   nameplate: {fileID: 0}
   _PlayerHealthSlider: {fileID: 114338824901584998}
   _Health: {fileID: 114536474197379052}
   hp: 100
+  hpmax: 0
 --- !u!114 &114938579300556804
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -5299,6 +5415,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2a2df2c9fe8b0094eb8a6440acecb58d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!135 &135776824721904080
+SphereCollider:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1769956332138034}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.001
+  m_Center: {x: -0.000000053924953, y: 0.00000005579849, z: 0.004}
 --- !u!136 &136883395435240246
 CapsuleCollider:
   m_ObjectHideFlags: 1

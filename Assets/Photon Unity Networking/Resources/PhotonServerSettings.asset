@@ -45,4 +45,5 @@ MonoBehaviour:
   - SetName
   - Damage
   - shot
+  - Cure
   DisableAutoOpenWizard: 1

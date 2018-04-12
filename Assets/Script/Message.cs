@@ -45,10 +45,9 @@ using UnityEngine.UI;
             clickIcon.enabled = false;
             messageText = GetComponentInChildren<Text>();
             messageText.text = "";
-            SetMessage("ようこそ。勇者様\n"
-                + "怪人はこの先の山に潜んでいます。\n"
-                + "私が案内いたしましょう。\n"
-                + "道中には、様々な魔物が潜んでいますのでお気を付けください。\n"
+            SetMessage("さっきは助けてくれてありがとう。\n"
+                + "怪人はこの先の山に潜んでいるわ。\n"
+                + "道中にも、危険が多いと思うから気を付けてね。\n"
 
             );
         }
