@@ -6,7 +6,7 @@ using System.Linq;
 public class RespawnMover : MonoBehaviour {
 
 
-    private float speed = 3;
+    private float speed = 20;
     private float rotationSmooth = 2;
 
     public GameObject[] targets;

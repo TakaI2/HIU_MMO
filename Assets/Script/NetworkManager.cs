@@ -16,12 +16,14 @@ namespace Com.MyCompany.MyGame
         public InputField playerName;
         public GameObject logoutUI;
 
+        private bool InRoomflag;
         private int charaNo = 0;
         private Vector3 respawnpoint;
 
         // Use this for initialization
         void Start()
         {
+            InRoomflag = false;
 
             //ログをすべて表示する。
             PhotonNetwork.logLevel = PhotonLogLevel.Full;
@@ -42,6 +44,12 @@ namespace Com.MyCompany.MyGame
 
             //サーバ接続状態を表示
             text.text = PhotonNetwork.connectionStateDetailed.ToString();
+
+            if(Input.GetKeyDown(KeyCode.Z) && InRoomflag == true)
+            {
+                LogoutGame();
+            }
+
 
         }
 
@@ -65,6 +73,7 @@ namespace Com.MyCompany.MyGame
         {
             Debug.Log("ロビーに入る");
             loginUI.SetActive(true);
+            InRoomflag = false;
         }
         
 
@@ -119,6 +128,7 @@ namespace Com.MyCompany.MyGame
                 if (room.PlayerCount < room.MaxPlayers)
                 {
                     list.Add(room.Name);
+
                 }
             }
 
@@ -139,6 +149,10 @@ namespace Com.MyCompany.MyGame
         {
             loginUI.SetActive(false);
             logoutUI.SetActive(true);
+            InRoomflag = true;
+
+            Cursor.visible = false;
+
             Debug.Log("入室");
 
             respawnpoint = GameObject.FindWithTag("Respawn").transform.position;
@@ -223,6 +237,8 @@ namespace Com.MyCompany.MyGame
         void OnLeftRoom()
         {
             Debug.Log("退室");
+            Cursor.visible = true;
+            InRoomflag = false;
             logoutUI.SetActive(false);
 
         }

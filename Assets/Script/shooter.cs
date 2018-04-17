@@ -29,6 +29,7 @@ namespace Com.MyCompany.MyGame
 
         private void Start()
         {
+
             if (!photonView.isMine)
             {
 

@@ -229,7 +229,8 @@ namespace Com.MyCompany.MyGame
 
             updateAngle(Input.GetAxis("Mouse X") + stair, Input.GetAxis("Mouse Y"));
             
-            updateDistance(Input.GetAxis("Mouse ScrollWheel"));
+            //updateDistance(Input.GetAxis("Mouse ScrollWheel"));
+            distance = maxDistance;
 
             var lookAtPos = transform.position + centerOffset;　　　//変数lookAtPosに、targetに指定したオブジェクトの位置にオフセットを足した値を入力
             updatePosition(lookAtPos);                                     //ターゲットの座標lookAtPosを計算。
@@ -248,11 +249,13 @@ namespace Com.MyCompany.MyGame
 
         }
 
+        /*
         void updateDistance(float scroll) //カメラとターゲットの距離をマウススクロールで変化させるための関数。
         {
             scroll = distance - scroll * scrollSensitivity;                 //変数scrollの値を、カメラとターゲットとの距離からマウスのスクロール量を引いた値にする。
             distance = Mathf.Clamp(scroll, minDistance, maxDistance);       //変数distanceの値を、minDistance, maxDistanceの間に制限する。
         }
+        */
 
         void updatePosition(Vector3 lookAtPos) //
         {

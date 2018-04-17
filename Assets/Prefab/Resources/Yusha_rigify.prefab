@@ -6486,6 +6486,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Arrive: 1
+  Dying: 0
   cureEffect: {fileID: 1304730709054948, guid: ec069d111c863a74089a5c84c6eb385d, type: 2}
   nameplate: {fileID: 0}
   _PlayerHealthSlider: {fileID: 114403664447526486}
